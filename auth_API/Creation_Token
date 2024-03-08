@@ -1,10 +1,10 @@
 <?php
-	require('jwt_utils.php');
+	require('Token_fonctions_utils');
 
-	$server = "localhost";
-    $db = "r401apiserveur";
-    $login = "root"; 
-    $mdp = "qvk1hXX_THrRfD*Q"; //Protège le serveur MySQL 
+    $server = "localhost";
+    $db = "gestion_cabinet_medical";
+    $login = "root";
+    $mdp = // A rajouter
 
     // Connexion au serveur MySQL
     try {
@@ -48,7 +48,6 @@
 		}	
 	}
 
-
 	//Envoie de la réponse au client
 	function deliver_response($status_code, $status_message, $data=null){
 		http_response_code($status_code);
@@ -64,5 +63,4 @@
 		} 
 		echo $json_response;
 	}
-
 ?>
