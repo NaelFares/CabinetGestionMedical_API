@@ -1,6 +1,6 @@
 <?php
 
-function generate_jwt($headers, $payload, $secret) {
+function generate_jwt($headers, $payload, $secret = 'z4jtMwDqGPHHOvlItYanL0zSm') {
 	$headers_encoded = base64url_encode(json_encode($headers));
 
 	$payload_encoded = base64url_encode(json_encode($payload));
@@ -13,7 +13,7 @@ function generate_jwt($headers, $payload, $secret) {
 	return $jwt;
 }
 
-function is_jwt_valid($jwt, $secret) {
+function is_jwt_valid($jwt, $secret = 'z4jtMwDqGPHHOvlItYanL0zSm' ) {
 	// split the jwt
 	$tokenParts = explode('.', $jwt);
 	//print_r($tokenParts);
