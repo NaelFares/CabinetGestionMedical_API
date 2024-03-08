@@ -1,0 +1,55 @@
+.containerExterieur {
+    border-radius: 5px;
+    box-shadow: 5px 5px 10px rgba(0.1, 0.1, 0.1, 0.1);
+    margin-left: auto; /* Pour centrer  */
+    margin-right: auto; /* Pour centrer  */
+    display: flex;
+    justify-content: center;
+    max-width: fit-content; /* Pour que le contenu prenne toujours le max de la place*/
+    background-color: white; 
+}
+
+
+.containerTab {
+    max-height: 480px; /* la taille max du tableau */
+    overflow-y: scroll; /* Pour la scrollbar */
+    margin: 8px;
+}
+
+.tableau {
+    border-collapse: collapse;
+    background-color: white;
+    min-width: fit-content; /* Pour ne pas avoir la scrollbar en bas*/
+}
+
+.tableau th, td {
+    padding: 8px;
+    text-align: center;
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
+    border: 1px solid rgb(46, 46, 46);
+}
+
+.tableau th {
+    background-color:  rgb(46, 46, 46);
+    color: white;
+    font-weight: normal;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    position: sticky; /* Permet de garder le titre du tableau au même endroit malgré le scroll */
+    top: 0px;
+}
+
+.tableau td {
+    cursor: pointer;
+}
+
+.tableau tr:hover {
+    background-color: rgba(0, 0, 0, 0.081);
+}
+
+/* Classe pour la colonne Civilité */
+.col-civilite {
+    width: 8%; /* Ajuster la largeur selon les besoins */
+}
+

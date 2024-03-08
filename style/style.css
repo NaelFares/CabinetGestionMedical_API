@@ -1,0 +1,792 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+
+body{
+	background-image: url('../image/fond.jpg'); /* Préciser le répertoire parent avec ../ */
+	background-size: 25%;
+}
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+ /* Style de la div vide pour permettre au header de se placer en haut de page*/
+ .vide-haut-page {
+  width: 100%; /* Largeur de 100% de la largeur parente */
+  height: 100px; /* Hauteur de 100 pixels, ajustez selon vos besoins */
+  margin: 0;
+  padding: 0;
+}
+
+
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////// BARRE DE NAVIGATION  ///////////////////////////////////////////
+//////////////////////////////////////////////// DEBUT  //////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+/* classe concernant uniquement le header pour éviter que d'autre styles s'appliquent dessus*/
+.custom-header {
+
+    *{
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .utilisateur {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: row;
+      font-size: 18px;
+      line-height: 1.9; 
+    }
+
+    .utilisateur img {
+      margin-right: 1rem;
+    }
+
+    .utilisateur p {
+      margin-right: 3rem;
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .deconnexion{
+      background: #2f91fe;
+      padding: 4px 14px;
+      border:unset;
+      cursor:pointer;
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 15px;
+      font-weight: normal;
+    }
+
+    .deconnexion:hover{
+        background: #035dc4;
+        transition: all 0.5s;
+        border-radius: 10px;
+        box-shadow: 0px 1px 1px #414141cc;
+    }
+
+    nav{
+      position: fixed;
+      z-index: 99;
+      width: 100%;
+      background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(44,117,255,1) 0%, rgba(55,218,252,1) 100%);
+      box-shadow: 5px 5px 10px rgba(0.1, 0.1, 0.1, 0.1);
+      display: inline-flex; /* Enlever si problm avec le header pour la deconnexion*/
+    }
+
+    nav .wrapper{
+      position: relative;
+      max-width: 1300px;
+      padding: 0px 30px;
+      height: 80px;
+      line-height: 80px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+    }
+
+    .wrapper .logo a{
+      color: #f2f2f2;
+      font-size: 30px;
+      font-weight: 600;
+      text-decoration: none;
+      margin-right: 7rem;
+    }
+
+    .wrapper .nav-links{
+      display: inline-flex;
+    }
+    .nav-links li{
+      list-style: none;
+    }
+    .nav-links li a{
+      color: #f2f2f2;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: 500;
+      padding: 9px 15px;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+    }
+    .nav-links li a:hover{
+      background: #3a3b3c21;
+    }
+    .nav-links .mobile-item{
+      display: none;
+    }
+    .nav-links .drop-menu{
+      position: absolute;
+      background: #2c97ff;
+      width: 210px;
+      line-height: 45px;
+      top: 85px;
+      opacity: 0;
+      visibility: hidden;
+      box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+    }
+    .nav-links li:hover .drop-menu,
+    .nav-links li:hover .mega-box{
+      transition: all 0.3s ease;
+      top: 70px;
+      opacity: 1;
+      visibility: visible;
+    }
+    .drop-menu li a{
+      width: 100%;
+      display: block;
+      padding: 0 0 0 15px;
+      font-weight: 400;
+      border-radius: 0px;
+    }
+    .mega-box{
+      position: absolute;
+      left: 0;
+      width: 100%;
+      padding: 0 30px;
+      top: 85px;
+      opacity: 0;
+      visibility: hidden;
+    }
+    .mega-box .content{
+      background: #242526;
+      padding: 25px 20px;
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+    }
+    .mega-box .content .row{
+      width: calc(25% - 30px);
+      line-height: 45px;
+    }
+    .content .row img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .content .row header{
+      color: #f2f2f2;
+      font-size: 20px;
+      font-weight: 500;
+    }
+    .content .row .mega-links{
+      margin-left: -40px;
+      border-left: 1px solid rgba(255,255,255,0.09);
+    }
+    .row .mega-links li{
+      padding: 0 20px;
+    }
+    .row .mega-links li a{
+      padding: 0px;
+      padding: 0 20px;
+      color: #d9d9d9;
+      font-size: 17px;
+      display: block;
+    }
+    .row .mega-links li a:hover{
+      color: #f2f2f2;
+    }
+    .wrapper .btn{
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+      display: none;
+    }
+    .wrapper .btn.close-btn{
+      position: absolute;
+      right: 30px;
+      top: 10px;
+    }
+
+    @media screen and (max-width: 970px) {
+      .wrapper .btn{
+        display: block;
+      }
+      .wrapper .nav-links{
+        position: fixed;
+        height: 100vh;
+        width: 100%;
+        max-width: 350px;
+        top: 0;
+        left: -100%;
+        background: #242526;
+        display: block;
+        padding: 50px 10px;
+        line-height: 50px;
+        overflow-y: auto;
+        box-shadow: 0px 15px 15px rgba(0,0,0,0.18);
+        transition: all 0.3s ease;
+      }
+      /* custom scroll bar */
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #242526;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #3A3B3C;
+      }
+      #menu-btn:checked ~ .nav-links{
+        left: 0%;
+      }
+      #menu-btn:checked ~ .btn.menu-btn{
+        display: none;
+      }
+      #close-btn:checked ~ .btn.menu-btn{
+        display: block;
+      }
+      .nav-links li{
+        margin: 15px 10px;
+      }
+      .nav-links li a{
+        padding: 0 20px;
+        display: block;
+        font-size: 20px;
+      }
+      .nav-links .drop-menu{
+        position: static;
+        opacity: 1;
+        top: 65px;
+        visibility: visible;
+        padding-left: 20px;
+        width: 100%;
+        max-height: 0px;
+        overflow: hidden;
+        box-shadow: none;
+        transition: all 0.3s ease;
+      }
+      #showDrop:checked ~ .drop-menu,
+      #showMega:checked ~ .mega-box{
+        max-height: 100%;
+      }
+      .nav-links .desktop-item{
+        display: none;
+      }
+      .nav-links .mobile-item{
+        display: block;
+        color: #f2f2f2;
+        font-size: 20px;
+        font-weight: 500;
+        padding-left: 20px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+      }
+      .nav-links .mobile-item:hover{
+        background: #3A3B3C;
+      }
+      .drop-menu li{
+        margin: 0;
+      }
+      .drop-menu li a{
+        border-radius: 5px;
+        font-size: 18px;
+      }
+      .mega-box{
+        position: static;
+        top: 65px;
+        opacity: 1;
+        visibility: visible;
+        padding: 0 20px;
+        max-height: 0px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+      .mega-box .content{
+        box-shadow: none;
+        flex-direction: column;
+        padding: 20px 20px 0 20px;
+      }
+      .mega-box .content .row{
+        width: 100%;
+        margin-bottom: 15px;
+        border-top: 1px solid rgba(255,255,255,0.08);
+      }
+      .mega-box .content .row:nth-child(1),
+      .mega-box .content .row:nth-child(2){
+        border-top: 0px;
+      }
+      .content .row .mega-links{
+        border-left: 0px;
+        padding-left: 15px;
+      }
+      .row .mega-links li{
+        margin: 0;
+      }
+      .content .row header{
+        font-size: 19px;
+      }
+    }
+    nav input{
+      display: none;
+    }
+
+    .body-text{
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      text-align: center;
+      padding: 0 30px;
+    }
+
+    .body-text div{
+      font-size: 45px;
+      font-weight: 600;
+    }
+
+}
+
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////// BARRE DE NAVIGATION  ///////////////////////////////////////////
+///////////////////////////////////////////////// FIN  ///////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+/*//////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////// PAGE ajouter patient, medecin, consultation  /////////////////////
+///////////////////////////////////////////////// DEBUT  ///////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+
+.errormessage{
+	font-size: 20px;
+	margin-top: 10px;
+  margin-bottom: 30px;
+}
+
+.errormessage p{
+	color: red;
+}
+
+.heading{
+	font-size: 40px;
+	margin-top: 35px;
+	margin-bottom: 30px;
+	padding-left: 20px;
+}
+
+.card{
+	border-radius: 10px !important;
+	margin-top: 30px;
+	margin-bottom: 60px;
+	box-shadow: 5px 5px 10px rgba(0.1, 0.1, 0.1, 0.1);
+}
+
+.label
+{position:absolute;
+	height: 24px;
+	background: none;
+	border-radius: 6px;
+	line-height: 48px;
+	font-size: 15px;
+	color: gray;
+	width:100%;
+	font-weight:100;
+	padding-left: 25px
+}
+
+.form-card{
+	margin-left: 20px;
+	margin-right: 20px
+}
+
+.form-card input, .form-card textarea{
+	padding: 10px 15px 5px 15px;
+	border: none;
+	border: 1px solid lightgrey;
+	border-radius: 6px;
+	margin-bottom: 25px;
+	margin-top: 2px;
+	width: 100%;
+	box-sizing: border-box;
+	font-family: arial;
+	color: #2C3E50;
+	font-size: 14px;
+	letter-spacing: 1px
+}
+        
+.form-card input:focus, .form-card textarea:focus{
+	-moz-box-shadow: 0px 0px 0px 1.5px skyblue !important;
+	-webkit-box-shadow: 0px 0px 0px 1.5px skyblue !important;
+	box-shadow: 0px 0px 0px 1.5px skyblue !important;
+	font-weight: bold;
+	border: 1px solid #2c75ff;
+	outline-width: 0
+}
+        
+.input-group{
+	position:relative;
+	width:100%;
+	overflow:hidden
+}
+        
+.input-group input {
+  position:relative;
+	height:60px;
+	margin-left: 1px;
+	margin-right: 1px;
+	border-radius:6px;
+  padding-top: 30px;
+	padding-left: 25px
+}
+
+/* variante pour un input différent dans la page ajout consultation */
+.input-group-date input {
+  position:relative;
+	height:60px;
+	margin-left: 1px;
+	margin-right: 1px;
+	border-radius:6px;
+	padding-left: 25px
+}
+        
+.input-group label
+{position:absolute;
+	height: 24px;
+	background: none;
+	border-radius: 6px;
+	line-height: 48px;
+	font-size: 15px;
+	color: gray;
+	width:100%;
+	font-weight:100;
+	padding-left: 25px
+}
+        
+input:focus + label
+{color: #2c75ff
+}
+
+.btn-pay{
+	background-color: #2c75ff;
+	height: 60px;
+	color: #ffffff !important;
+	font-weight: bold
+}
+        
+.btn-pay:hover{
+	background-color: #3F51B5
+}
+        
+.btn {
+    background-color: #2c75ff;
+    width: 100%;
+    overflow: hidden;
+    height: 60px;
+    margin-left: 1px;
+    margin-right: 1px;
+    border-radius: 6px;
+    padding-top: 30px;
+    padding-left: 25px;
+	  color: white !important;
+	  font-size: 1rem !important;
+}
+
+.btn:hover {
+  background-color: #0b51d4;
+  transition: all 0.5s;
+}
+        
+.fit-image{
+	width: 100%;
+	object-fit: cover
+}
+        
+img{
+	border-radius: 5px
+}
+        
+.radio-group{
+	position: relative;
+	margin-bottom: 25px
+}
+        
+.radio{
+	display:inline-block;
+	border-radius: 6px;
+	box-sizing: border-box;
+	border: 2px solid lightgrey;
+	cursor:pointer;
+	margin: 12px 25px 12px 0px
+}
+        
+.radio:hover{
+	box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.2)
+}
+        
+.radio.selected{
+	box-shadow: 0px 0px 0px 1px rgba(0, 0, 155, 0.4);
+	border: 2px solid 2c75ff
+}
+ 
+.label-radio{
+	font-weight: bold;
+	color: #000000
+}
+
+/* Style pour le survol de la souris de la combobox */
+.form-card select:hover {
+  border-color: #2c75ff;
+}
+
+/* Style pour le focus de la combobox */
+.form-card select:focus {
+  outline: none;
+  border-color: #2c75ff;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.input-group select {
+  padding: 10px;
+  border: 1px solid lightgrey;
+  margin-bottom: 25px;
+  width: 100%;
+  box-sizing: border-box;
+  color: #2C3E50;
+  font-size: 14px;
+  letter-spacing: 1px;
+position:relative;
+height:60px;
+margin-left: 1px;
+margin-right: 1px;
+border-radius:6px;
+padding-left: 25px
+}
+
+.titre-suppression {
+  margin-left: auto; /* Pour centrer  */
+  margin-right: auto; /* Pour centrer  */
+  text-align:center;
+  margin-top: 40px;
+  margin-bottom: 30px;
+}
+
+.informations {
+  font-size: 18px;
+  width: 100%;
+  text-align: center;
+}
+
+.informations-medecin-patient-consultation {
+  font-size: 20px;
+  color: white;
+  background-color: rgb(46, 46, 46);
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0.5rem;
+}
+
+/* Pages Suppression */
+.centrer-milieu-page {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+}
+
+
+/*//////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////// PAGE ajouter patient, medecin, consultation  /////////////////////
+///////////////////////////////////////////////// FIN  ///////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////TABLEAU D'AFFICHAGE ///////////////////////////////////////////
+///////////////////////////////////////////////// DEBUT  ///////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////// BOUTONS ///////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+.button-sous-tableau {
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-ajout{
+    color: #ffffff;
+    background: #2f91fe;
+    padding:10px 10px;
+    border:unset;
+    cursor:pointer;
+    margin-right: 5px;
+    border-radius: 10px;
+    font-size: 15px;
+}
+
+.button-ajout:hover{
+    background: #035dc4;
+    transition: all 0.5s;
+    border-radius: 10px;
+    box-shadow: 0px 1px 1px #414141cc;
+}
+
+a {
+	text-decoration: none !important; 
+	color: white !important;
+  font-size: 15px;
+ }
+
+ /* Style pour les liens désactivés */
+a[disabled] {
+  pointer-events: none; /* Désactive les événements du lien, y compris le clic */
+  opacity: 0.4; /* Opacité réduite pour indiquer que le lien est désactivé */
+  cursor: not-allowed; /* Curseur non autorisé pour indiquer que le lien est désactivé */
+}
+
+.lien-modif-supp{
+    color: #ffffff;
+    background-color:#777777;;
+    padding:10px 10px;
+    border:unset;
+    cursor:pointer;
+    margin-right: 5px;
+    border-radius: 10px;
+}
+
+.lien-modif-supp:hover{
+    background: #5c5c5c;
+    transition: all 0.5s;
+    border-radius: 10px;
+    box-shadow: 0px 1px 1px #414141cc;
+}
+
+/* Page suppression */
+.boutons-suppression {
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+}
+
+.input-supp-valider{
+  font-size: 16px !important;
+  color: #ffffff !important;
+  background-color:#e21b17;
+  border: unset !important;
+  cursor:pointer;
+  border-radius: 10px;
+  margin: 0px !important;
+  padding: 0px !important;
+  margin-right: 5px !important;
+  border-radius: 10px !important;
+  padding: 10px 20px !important;
+  font-family: 'Poppins', sans-serif !important;
+}
+
+.input-supp-valider:hover{
+  background: #a91411;
+  transition: all 0.5s;
+  border-radius: 10px;
+  box-shadow: 0px 1px 1px #414141cc;
+}
+
+.btn-supp-annuler{
+  font-size: 16px;
+  color: #ffffff;
+  background-color:#2f91fe;
+  padding: 10px 20px;
+  border:unset;
+  cursor:pointer;
+  margin-right: 5px;
+  border-radius: 10px;
+}
+
+.btn-supp-annuler:hover{
+  background: #035dc4;
+  transition: all 0.5s;
+  border-radius: 10px;
+  box-shadow: 0px 1px 1px #414141cc;
+}
+
+ /* Style pour les liens désactivés */
+ input[disabled] {
+  pointer-events: none; /* Désactive les événements du lien, y compris le clic */
+  opacity: 0.4; /* Opacité réduite pour indiquer que le lien est désactivé */
+  cursor: not-allowed; /* Curseur non autorisé pour indiquer que le lien est désactivé */
+}
+
+.button-sur-tableau {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  align-items:flex-start;
+  width: 73%;
+}
+
+.input-filtrer{
+  font-size: 16px !important;
+  color: #ffffff !important;
+  background-color: rgb(46, 46, 46);
+  border: unset !important;
+  cursor:pointer;
+  border-radius: 10px;
+  padding: 0px !important;
+  margin-left: 5px !important;
+  border-radius: 10px !important;
+  padding: 9px 12px !important;
+  font-family: 'Poppins', sans-serif !important;
+}
+
+.input-filtrer:hover{
+  background:  rgb(78, 78, 78);
+  transition: all 0.5s;
+  border-radius: 10px;
+  box-shadow: 0px 1px 1px #414141cc;
+}
+
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////// FILTRAGE  Medecin   ///////////////////////////////////////////
+///////////////////////////////////////////////// ///////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+.select-filtre {
+  min-width: 20ch;
+  max-width: 20ch;
+  border: 1px solid;
+  border-radius: 0.25em;
+  padding: 0.40em;
+  font-size: 15px;
+  cursor: pointer;
+  line-height: 1;
+  background-color: #fff;
+  background-image: linear-gradient(to top, #f9f9f9, #fff 33%);
+}
+
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////TABLEAU D'AFFICHAGE ///////////////////////////////////////////
+///////////////////////////////////////////////// FIN  ///////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////*/
