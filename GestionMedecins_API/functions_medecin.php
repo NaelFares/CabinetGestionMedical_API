@@ -235,26 +235,26 @@ function deleteMedecin($linkpdo, $id) {
 
     $response = array(); // Initialisation du tableau de réponse
 
-    $reqDeleteUnePhrase = $linkpdo->prepare('DELETE FROM chuckn_facts WHERE id = :id');
+    $reqDeleteMedecin = $linkpdo->prepare('DELETE FROM medecin WHERE id = :id');
 
-    if ($reqDeleteUnePhrase == false) {
-        echo "Erreur dans la préparation de la requête de suppression d'une phrase.";
+    if ($reqDeleteMedecin == false) {
+        echo "Erreur dans la préparation de la requête de suppression d'un medecin.";
     } else {
 
-        $reqDeleteUnePhrase->bindParam(':id', $id, PDO::PARAM_STR); 
+        $reqDeleteMedecin->bindParam(':id', $id, PDO::PARAM_STR); 
 
-        $reqDeleteUnePhrase->execute();
+        $reqDeleteMedecin->execute();
 
-        if ($reqDeleteUnePhrase == false) {
-            echo "Erreur dans l'execution de la requête de création d'une phrase.";
+        if ($reqDeleteMedecin == false) {
+            echo "Erreur dans l'execution de la requête de suppression d'un medecin.";
             $response['statusCode'] = 400;
             $response['statusMessage'] = "Syntaxe de la requête non conforme";
         } else {
             // On récupère toutes les phrases
-            $data = $reqDeleteUnePhrase->fetchAll(PDO::FETCH_ASSOC);
+            $data = $reqDeleteMedecin->fetchAll(PDO::FETCH_ASSOC);
 
             $response['statusCode'] = 200; // Status code
-            $response['statusMessage'] = "La requête a réussi, suppression effectuée";
+            $response['statusMessage'] = "La requête a réussie, suppression effectuée";
         }
     }
 
