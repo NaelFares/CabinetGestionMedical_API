@@ -1,8 +1,10 @@
 <?php
 	/*Ce fichier contiendra toutes les définitions des fonctions de manipulations des données en SQL.*/
 
-    require("jwt_utils.php");
-
+    require("auth_API/jwt_utils.php");
+	require("GestionConsultations_API/Switch.php");
+	require("GestionMedecins_API/Switch.php");
+	require("GestionUsagers_API/Switch.php");
 
 	function getAllPhrases(){
 		$resultat = $linkpdo->prepare('SELECT * FROM chuckn_facts');
@@ -42,7 +44,7 @@
 			if ($resultat == false) {
 			    deliver_response('500', 'Erreur dans l\'exécution de la requête', $resultat);
 			} else {
-				//................................
+				//.........................................................
 			}
 		}
 	}
