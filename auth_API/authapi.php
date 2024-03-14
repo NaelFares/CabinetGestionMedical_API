@@ -14,7 +14,7 @@ switch ($http_method){
         // get posted data
         $data = (array) json_decode(file_get_contents('php://input'), TRUE);
 
-        if(isValidUser($linkpdo, $data['login'], $data['password'])){
+        if(isValidUser($linkpdo, $data['login'], $data['mdp'])){
             $login = $data['login'];
             $headers = array('alg'=>'HS256','typ'=>'JWT');
             $playload = array('login'=>$login, 'exp'=>(time() + 60));

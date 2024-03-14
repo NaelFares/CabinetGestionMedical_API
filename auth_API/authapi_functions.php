@@ -3,7 +3,7 @@
 /// Envoi de la réponse au Client
 function isValidUser($linkpdo, $user, $password) {
 
-    $reqObtenirInfo = $linkpdo->prepare('SELECT login, password FROM user WHERE login = :login');
+    $reqObtenirInfo = $linkpdo->prepare('SELECT login, mdp FROM user_auth_v1 WHERE login = :login');
 
     if ($reqObtenirInfo == false) {
         echo "Erreur dans la préparation de la requête d'affichage.";
@@ -20,7 +20,7 @@ function isValidUser($linkpdo, $user, $password) {
             $data = $reqObtenirInfo->fetch();
 
             //Documentation : password_verify — Verifies that a password matches a hash 
-           if( $user == $data['login'] && password_verify($password, $data['password'])) {
+           if( $user == $data['login'] && password_verify($password, $data['mdp'])) {
                 return true;
            } else {
             return false;
