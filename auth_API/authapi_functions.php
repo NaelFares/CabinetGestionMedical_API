@@ -20,7 +20,7 @@ function isValidUser($linkpdo, $user, $password) {
             $data = $reqObtenirInfo->fetch();
 
             //Documentation : password_verify — Verifies that a password matches a hash 
-           if( $user == $data['login'] && password_verify($password, $data['mdp'])) {
+           if( $user == $data['login'] && $password == $data['mdp']) {
                 return true;
            } else {
             return false;
