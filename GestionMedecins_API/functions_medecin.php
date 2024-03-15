@@ -8,14 +8,14 @@ function readMedecin($linkpdo) {
     $reqAllMedecin = $linkpdo->prepare('SELECT idM, civilite, prenom, nom FROM medecin');
 
     if ($reqAllMedecin == false) {
-        echo "Erreur dans la préparation de la requête d'affichage.";
+        $response['statusCode'] = 400;
+        $response['statusMessage'] = "Erreur dans l'execution de la requête d'affichage.";    
     } else {
         $reqAllMedecin->execute();
 
         if ($reqAllMedecin == false) {
-            echo "Erreur dans l'execution de la requête d'affichage.";
             $response['statusCode'] = 400;
-            $response['statusMessage'] = "Syntaxe de la requête non conforme";
+            $response['statusMessage'] = "Erreur dans l'execution de la requête d'affichage.";
         } else {
             // On récupère toutes les phrases
             $data = $reqAllMedecin->fetchAll(PDO::FETCH_ASSOC);
@@ -36,7 +36,8 @@ function readMedecinParId($linkpdo, $id) {
     $reqMedecinParId = $linkpdo->prepare('SELECT idM, civilite, prenom, nom FROM medecin WHERE idM = :idM');
 
     if ($reqMedecinParId == false) {
-        echo "Erreur dans la préparation de la requête d'affichage d'un seul medecin.";
+        $response['statusCode'] = 400;
+        $response['statusMessage'] = "Erreur dans la préparation de la requête d'affichage d'un seul medecin.";
     } else {
 
         $reqMedecinParId->bindParam(':idM', $id, PDO::PARAM_STR); 
@@ -44,9 +45,8 @@ function readMedecinParId($linkpdo, $id) {
         $reqMedecinParId->execute();
 
         if ($reqMedecinParId == false) {
-            echo "Erreur dans l'execution de la requête d'affichage d'un seul medecin par un Id.";
             $response['statusCode'] = 400;
-            $response['statusMessage'] = "Syntaxe de la requête non conforme";
+            $response['statusMessage'] = "Erreur dans l'execution de la requête d'affichage d'un seul medecin par un Id.";
         } else {
             // On récupère tout les medecins
             $data = $reqMedecinParId->fetchAll(PDO::FETCH_ASSOC);
@@ -70,9 +70,8 @@ function createMedecin($linkpdo, $civilite, $nom, $prenom) {
 
         //Test de la requete de présence d'un medecin => die si erreur
         if($reqExisteDeja == false) {
-            echo "Erreur dans l'execution de la requête de création d'un medecin.";
             $response['statusCode'] = 400;
-            $response['statusMessage'] = "Syntaxe de la requête non conforme";        
+            $response['statusMessage'] = "Erreur dans l'execution de la requête de création d'un medecin.";        
         } else {
 
             $reqExisteDeja->bindParam(':nom', $nom, PDO::PARAM_STR);
@@ -83,7 +82,8 @@ function createMedecin($linkpdo, $civilite, $nom, $prenom) {
 
             //Vérification de la bonne exécution de la requete ExisteDéja
             if($reqExisteDeja == false) {
-                die("Erreur dans l'exécution de la requête de test de présence d'un medecin.");
+                $response['statusCode'] = 400;
+                $response['statusMessage'] = "Erreur dans l'execution de la requête de création d'un medecin.";                    
             } else {
 
                 // Récupération du résultat
@@ -91,7 +91,6 @@ function createMedecin($linkpdo, $civilite, $nom, $prenom) {
 
                 // Vérification si le patient existe déjà
                 if ($nbMedecins > 0) {
-                    echo "Erreur dans l'execution de la requête de création d'une phrase.";
                     $response['statusCode'] = 409;
                     $response['statusMessage'] = "Existe déjà";
                 } else {
@@ -99,9 +98,8 @@ function createMedecin($linkpdo, $civilite, $nom, $prenom) {
                     $reqCreateMedecin = $linkpdo->prepare('INSERT INTO medecin (civilite, nom, prenom) VALUES (:civilite, :nom, :prenom)');
 
                     if ($reqCreateMedecin == false) {
-                        echo "Erreur dans la préparation de la requête de création d'un medecin.";
                         $response['statusCode'] = 400;
-                        $response['statusMessage'] = "Syntaxe de la requête non conforme";
+                        $response['statusMessage'] = "Erreur dans la préparation de la requête de création d'un medecin.";
                     } else {
 
                         $reqCreateMedecin->bindParam(':civilite', $civilite, PDO::PARAM_STR); 
@@ -111,9 +109,8 @@ function createMedecin($linkpdo, $civilite, $nom, $prenom) {
                         $reqCreateMedecin->execute();
 
                         if ($reqCreateMedecin == false) {
-                            echo "Erreur dans l'execution de la requête de création d'une phrase.";
                             $response['statusCode'] = 400;
-                            $response['statusMessage'] = "Syntaxe de la requête non conforme";
+                            $response['statusMessage'] = "Erreur dans l'execution de la requête de création d'une phrase.";
                         } else {
 
                             $response['statusCode'] = 200; // Status code
@@ -286,17 +283,16 @@ function deleteMedecin($linkpdo, $id) {
                     $reqDeleteMedecin = $linkpdo->prepare('DELETE FROM medecin WHERE idM = :idM');
 
                     if ($reqDeleteMedecin == false) {
-                        echo "Erreur dans la préparation de la requête de suppression d'un medecin.";
-                    } else {
+                        $response['statusCode'] = 400;
+                        $response['statusMessage'] = "Erreur dans l'execution de la requête de suppression d'un medecin.";                    } else {
 
                         $reqDeleteMedecin->bindParam(':idM', $id, PDO::PARAM_STR); 
 
                         $reqDeleteMedecin->execute();
 
                         if ($reqDeleteMedecin == false) {
-                            echo "Erreur dans l'execution de la requête de suppression d'un medecin.";
                             $response['statusCode'] = 400;
-                            $response['statusMessage'] = "Syntaxe de la requête non conforme";
+                            $response['statusMessage'] = "Erreur dans l'execution de la requête de suppression d'un medecin.";
                         } else {
                             // On récupère toutes les phrases
                             $data = $reqDeleteMedecin->fetchAll(PDO::FETCH_ASSOC);
