@@ -197,39 +197,6 @@ function patchChuckFact($linkpdo, $id, $phrase=null, $vote=null, $faute=null , $
 }
 
 
-// Modifier completement un objet 
-function putChuckFact($linkpdo, $id, $phrase, $vote, $faute , $signalement ) {
-
-    $response = array(); // Initialisation du tableau de réponse
-
-    $reqPatchUnePhrase = $linkpdo->prepare('UPDATE chuckn_facts SET phrase = :phrase, vote = :vote, date_modif = :date_modif, faute = :faute, signalement = :signalement WHERE id = :id');
-
-    if ($reqPatchUnePhrase == false) {
-        echo "Erreur dans la préparation de la requête de modification complète d'une phrase.";
-    } else {
-
-        $reqPatchUnePhrase->bindParam(':phrase', $phrase, PDO::PARAM_STR); 
-        $reqPatchUnePhrase->bindParam(':vote', $vote, PDO::PARAM_STR); 
-        $reqPatchUnePhrase->bindParam(':date_modif', date("Y-m-d H:i:s" ), PDO::PARAM_STR); 
-        $reqPatchUnePhrase->bindParam(':faute', $faute, PDO::PARAM_STR); 
-        $reqPatchUnePhrase->bindParam(':signalement', $signalement, PDO::PARAM_STR); 
-        $reqPatchUnePhrase->bindParam(':id', $id, PDO::PARAM_STR); 
-
-        $reqPatchUnePhrase->execute();
-
-        if ($reqPatchUnePhrase == false) {
-            echo "Erreur dans l'execution de la requête de création d'une phrase.";
-            $response['statusCode'] = 400;
-            $response['statusMessage'] = "Syntaxe de la requête non conforme";
-        } else {
-            $response['statusCode'] = 200; // Status code
-            $response['statusMessage'] = "La requête a réussi, modification complète effectuée";
-        }
-    }
-
-    return $response; // Retour du tableau de réponse
-}
-
 /// Ajouter une phrase
 function deleteMedecin($linkpdo, $id) {
 
