@@ -16,7 +16,7 @@ switch ($http_method){
             //Traitement des données
 
             //Appel de la fonction de lecture des phrases
-            $matchingData=readChuckFactId($linkpdo, $id);
+            $matchingData=getPatientsById($linkpdo, $idP);
 
             deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"]);
 
@@ -36,8 +36,8 @@ switch ($http_method){
         $data = json_decode($postedData,true); //Reçoit du json et renvoi une adaptation exploitable en php. Le paramètre true impose un tableau en retour et non un objet.
         //Traitement des données
         
-        //Appel de la fonction de création d’une phrase
-        $matchingData=createChuckFact($linkpdo,$data['phrase']);
+        //Appel de la fonction de création d’une patient
+        $matchingData=createPatient($linkpdo, $data['civilite'], $data['nom'], $data['prenom'], $data['adresse'], $data['ville'], $data['code_postal'], $data['date_nais'], $data['lieu_nais'], $data['num_secu'], $data['idM']);
 
         deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"]);
 
@@ -60,26 +60,7 @@ switch ($http_method){
             deliver_response($matchingData["statusCode"], $matchingData["statusMessage"]);
         }
 
-    break;
-
-    case "PUT" :
-
-        if(isset($_GET['id']) == true) {
-            $id=htmlspecialchars($_GET['id']);
-            //Traitement des données
-
-            //Récupération des données dans le corps
-            $postedData = file_get_contents('php://input');
-            $data = json_decode($postedData,true); //Reçoit du json et renvoi une adaptation exploitable en php. Le paramètre true impose un tableau en retour et non un objet.
-            //Traitement des données
-            
-            //Appel de la fonction de modification complète d’une phrase
-            $matchingData=putChuckFact($linkpdo, $id , $data['phrase'], $data['vote'], $data['faute'], $data['signalement']);
-
-            deliver_response($matchingData["statusCode"], $matchingData["statusMessage"]);
-        }
-
-    break;
+    break; 
 
     case "DELETE" :
 
