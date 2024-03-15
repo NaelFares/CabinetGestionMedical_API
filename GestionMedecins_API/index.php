@@ -15,7 +15,7 @@ switch ($http_method){
             $id=htmlspecialchars($_GET['id']);
             //Traitement des données
 
-            //Appel de la fonction de lecture des phrases
+            //Appel de la fonction de lecture d'une phrase
             $matchingData=readMedecinParId($linkpdo, $id);
 
             deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"]);

@@ -107,8 +107,31 @@
     }
 
 
-    function majConsultation($linkpdo, $idC, $date_consultation, $heure_debut, $duree){
+    function patchConsultation($linkpdo, $idC, $date_consultation, $heure_debut, $duree){
+        $response = array();
 
+        $reqMajConsultation = $linkpdo->prepare('UPDATE consultations SET date_consultation = :date_consultation, heure_debut = :heure_debut, duree = :duree WHERE idC = :idC');
+        if($reqMajConsultation == false){
+            echo "Erreur dans la préparation de la requête de modification d'une consultation.";
+            $response['statusCode'] = 400;
+            $response['statusMessage'] = "Syntaxe de la requête non conforme";
+        } else {
+            $reqMajConsultation->bindParam(':idC', $idC, PDO::PARAM_STR);
+            $reqMajConsultation->bindParam(':date_consultation', $date_consultation, PDO::PARAM_STR);
+            $reqMajConsultation->bindParam(':heure_debut', $heure_debut, PDO::PARAM_STR);
+            $reqMajConsultation->bindParam(':duree', $duree, PDO::PARAM_STR);
+
+            $reqMajConsultation->execute();
+            if($reqMajConsultation == false){
+                echo "Erreur dans l'execution de la requête de modification d'une consultation.";
+                $response['statusCode'] = 400;
+                $response['statusMessage'] = "Syntaxe de la requête non conforme";
+            } else {
+                $response['statusCode'] = 200; 
+                $response['statusMessage'] = "La requête a réussi";
+            }
+        }
+        return $response;
     }
 
 
