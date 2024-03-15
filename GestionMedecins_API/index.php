@@ -1,6 +1,6 @@
 <?php
 
-require('modules/connexion_db.php');
+require('../Modules/connexion_db.php');
 require('functions_medecin.php');
 
 /// Identification du type de méthode HTTP envoyée par le client
@@ -29,7 +29,6 @@ switch ($http_method){
         
     break;
 
-    /*
     case "POST" :
 
         // Récupération des données dans le corps
@@ -37,11 +36,15 @@ switch ($http_method){
         $data = json_decode($postedData,true); //Reçoit du json et renvoi une adaptation exploitable en php. Le paramètre true impose un tableau en retour et non un objet.
         //Traitement des données
         
-        //Appel de la fonction de création d’une phrase
-        $matchingData=createChuckFact($linkpdo,$data['phrase']);
-
-        deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"]);
-
+        if(isset($data['civilite']) && isset($data['nom']) && isset($data['prenom'])) {
+            // Appel de la fonction de création d’un medecin
+            $matchingData = createMedecin($linkpdo, $data['civilite'], $data['nom'], $data['prenom']);
+            deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], null); // Les données de réponse sont stockées dans $matchingData, le troisième paramètre est null car il n'y a pas de données à renvoyer dans ce cas.
+        } else {
+            // Gestion de l'erreur si des données requises sont manquantes
+            deliver_response(400, "Des données requises sont manquantes", null);
+        }
+        
     break;
 
     case "PATCH" :
@@ -56,7 +59,7 @@ switch ($http_method){
             //Traitement des données
             
             //Appel de la fonction de modification partielle d’une phrase
-            $matchingData=patchChuckFact($linkpdo, $id , null, $data['vote'], null, null);
+            $matchingData=patchMedecin($linkpdo, $id , null, null, null);
 
             deliver_response($matchingData["statusCode"], $matchingData["statusMessage"]);
         }
@@ -71,22 +74,12 @@ switch ($http_method){
             //Traitement des données
 
             //Appel de la fonction de lecture des phrases
-            $matchingData=deleteChuckFact($linkpdo, $id);
+            $matchingData=deleteMedecin($linkpdo, $id);
 
             deliver_response($matchingData["statusCode"], $matchingData["statusMessage"]);
         }
         
     break;
 
-    case "OPTIONS" :
-
-        // Ajoutez les en-têtes CORS pour indiquer les méthodes HTTP autorisées
-        header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
-        // Ajoutez les en-têtes CORS pour indiquer les en-têtes autorisés
-        header('Access-Control-Allow-Headers: Content-Type, Authorization');
-
-        deliver_response("204", "Autorisation de la méthode option et des requêtes CORS");
-        
-    break;*/
 }
 ?>
