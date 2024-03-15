@@ -110,7 +110,7 @@
     function patchConsultation($linkpdo, $idC, $date_consultation, $heure_debut, $duree){
         $response = array();
 
-        $reqMajConsultation = $linkpdo->prepare('...............................');
+        $reqMajConsultation = $linkpdo->prepare('UPDATE consultations SET date_consultation = :date_consultation, heure_debut = :heure_debut, duree = :duree WHERE idC = :idC');
         if($reqMajConsultation == false){
             echo "Erreur dans la préparation de la requête de modification d'une consultation.";
             $response['statusCode'] = 400;
@@ -129,7 +129,6 @@
             } else {
                 $response['statusCode'] = 200; 
                 $response['statusMessage'] = "La requête a réussi";
-                $response['data'] = $data; 
             }
         }
         return $response;
