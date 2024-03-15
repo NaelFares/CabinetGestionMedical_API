@@ -1,7 +1,7 @@
 <?php
 
-require('connexionDB.php');
-require('functions.php');
+require('../Modules/connexion_db.php');
+require('functions_usagers.php');
 
 /// Identification du type de méthode HTTP envoyée par le client
 $http_method = $_SERVER['REQUEST_METHOD'];
@@ -22,7 +22,7 @@ switch ($http_method){
 
         } else {
             //Appel de la fonction de lecture des phrases
-            $matchingData=readChuckFact($linkpdo);
+            $matchingData=getAllPatients($linkpdo);
 
             deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"]);
         }

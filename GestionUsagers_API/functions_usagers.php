@@ -1,31 +1,30 @@
 <?php
 
 //Récupérer les usagers
-function recupPatients($linkpdo) {
+function getAllPatients($linkpdo) {
 
     $response = array(); // Initialisation du tableau de réponse
 
-    $reqRecupPatient = $linkpdo->prepare('SELECT idP, civilite, nom, prenom, adresse, ville, cp, date_naissance, lieu_naissance, num_secu_sociale, idM FROM patient');
+    $reqGetAllPatients = $linkpdo->prepare('SELECT idP, civilite, nom, prenom, adresse, ville, cp, date_naissance, lieu_naissance, num_secu_sociale, idM FROM patient');
 
-        if ($reqRecupPatient == false) {
+        if ($reqGetAllPatients == false) {
             echo "Erreur dans la préparation de la requête d'affichage.";
         } else {
-            $reqRecupPatient->execute();
+            $reqGetAllPatients->execute();
 
-        if ($reqRecupPatient == false) {
+        if ($reqGetAllPatients == false) {
             echo "Erreur dans l'execution de la requête d'affichage.";
             $response['statusCode'] = 400;
             $response['statusMessage'] = "Syntaxe de la requête non conforme";
         } else {
             // On récupère toutes les phrases
-            $data = $reqRecupPatient->fetchAll(PDO::FETCH_ASSOC);
+            $data = $reqGetAllPatients->fetchAll(PDO::FETCH_ASSOC);
 
             $response['statusCode'] = 200; // Status code
             $response['statusMessage'] = "La requête a réussi";
             $response['data'] = $data; // Stockage des données dans le tableau de réponse
         }
     }
-
     return $response; // Retour du tableau de réponse
 }
 
