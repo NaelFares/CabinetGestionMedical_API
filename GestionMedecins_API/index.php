@@ -1,6 +1,6 @@
 <?php
 
-require('connexion_db.php');
+require('modules/connexion_db.php');
 require('functions_medecin.php');
 
 /// Identification du type de méthode HTTP envoyée par le client
