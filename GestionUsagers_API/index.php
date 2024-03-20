@@ -37,7 +37,7 @@ switch ($http_method){
         //Traitement des données
         
         //Appel de la fonction de création d’une patient
-        $matchingData=createPatient($linkpdo, $data['civilite'], $data['nom'], $data['prenom'], $data['adresse'], $data['ville'], $data['code_postal'], $data['date_nais'], $data['lieu_nais'], $data['num_secu'], $data['idM']);
+        $matchingData=createPatient($linkpdo, $data['civilite'], $data['nom'], $data['prenom'], $data['sexe'], $data['adresse'], $data['ville'], $data['code_postal'], $data['date_nais'], $data['lieu_nais'], $data['num_secu'], $data['id_medecin']);
 
         deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"]);
 
