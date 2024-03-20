@@ -309,7 +309,6 @@ function deleteMedecin($linkpdo, $id) {
         }
     }
 
-
     return $response; // Retour du tableau de réponse
 }
 
