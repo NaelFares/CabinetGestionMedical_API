@@ -16,13 +16,13 @@ switch ($http_method){
             //Traitement des données
 
             //Appel de la fonction de lecture d'une phrase
-            $matchingData=readMedecinParId($linkpdo, $id);
+            $matchingData=getMedecinById($linkpdo, $id);
 
             deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"]);
 
         } else {
             //Appel de la fonction de lecture des phrases
-            $matchingData=readMedecin($linkpdo);
+            $matchingData=getAllMedecins($linkpdo);
 
             deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"]);
         }

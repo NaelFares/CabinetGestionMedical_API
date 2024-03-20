@@ -1,7 +1,7 @@
 <?php
 
 /// Envoi de la réponse au Client
-function readMedecin($linkpdo) {
+function getAllMedecins($linkpdo) {
 
     $response = array(); // Initialisation du tableau de réponse
 
@@ -9,7 +9,7 @@ function readMedecin($linkpdo) {
 
     if ($reqAllMedecin == false) {
         $response['statusCode'] = 400;
-        $response['statusMessage'] = "Erreur dans l'execution de la requête d'affichage.";    
+        $response['statusMessage'] = "Erreur dans la préparation de la requête d'affichage.";    
     } else {
         $reqAllMedecin->execute();
 
@@ -29,7 +29,7 @@ function readMedecin($linkpdo) {
     return $response; // Retour du tableau de réponse
 }
 
-function readMedecinParId($linkpdo, $id) {
+function getMedecinById($linkpdo, $id) {
 
     $response = array(); // Initialisation du tableau de réponse
 
@@ -71,7 +71,7 @@ function createMedecin($linkpdo, $civilite, $nom, $prenom) {
         //Test de la requete de présence d'un medecin => die si erreur
         if($reqExisteDeja == false) {
             $response['statusCode'] = 400;
-            $response['statusMessage'] = "Erreur dans l'execution de la requête de création d'un medecin.";        
+            $response['statusMessage'] = "Erreur dans la préparation de la requête de pré création d'un medecin.";        
         } else {
 
             $reqExisteDeja->bindParam(':nom', $nom, PDO::PARAM_STR);
@@ -172,14 +172,17 @@ function patchMedecin($linkpdo, $id, $civilite=null, $nom=null, $prenom=null) {
 
         $reqPatchUnMedecin->execute();
 
-        if ($reqPatchUnMedecin == false) {
+        $errorInfo = $reqPatchUnMedecin->errorInfo();
+
+        if ($errorInfo[0] != '00000') {
             echo "Erreur dans l'execution de la requête de modification d'un medecin.";
             $response['statusCode'] = 400;
-            $response['statusMessage'] = "Syntaxe de la requête non conforme";
+            $response['statusMessage'] = "Erreur lors de l'exécution de la requête : " . $errorInfo[2];
         } else {
             $response['statusCode'] = 200; // Status code
             $response['statusMessage'] = "La requête a réussie, modification partielle effectuée";
         }
+
     }
 
     return $response; // Retour du tableau de réponse
@@ -257,7 +260,7 @@ function deleteMedecin($linkpdo, $id) {
                     //Si non on execute la requete
                     if($reqReferentExiste == false) {
                         $response['statusCode'] = 500;
-                        $response['statusMessage'] = "Erreur dans la préparation de la requête de suppression d'un medecin (il est réferent) (2) ";
+                        $response['statusMessage'] = "Erreur dans l'execution de la requête de suppression d'un medecin (il est réferent) (2) ";
                         return $response;                       
                     } else {
                         // Récupération du résultat
@@ -284,7 +287,7 @@ function deleteMedecin($linkpdo, $id) {
 
                     if ($reqDeleteMedecin == false) {
                         $response['statusCode'] = 400;
-                        $response['statusMessage'] = "Erreur dans l'execution de la requête de suppression d'un medecin.";                    } else {
+                        $response['statusMessage'] = "Erreur dans la préparation de la requête de suppression d'un medecin.";                    } else {
 
                         $reqDeleteMedecin->bindParam(':idM', $id, PDO::PARAM_STR); 
 
@@ -305,7 +308,6 @@ function deleteMedecin($linkpdo, $id) {
             }
         }
     }
-
 
     return $response; // Retour du tableau de réponse
 }
