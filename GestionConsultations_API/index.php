@@ -1,12 +1,65 @@
 <?php
 
+<<<<<<< HEAD
 require('../Modules/connexion_db.php');
 require('functions_consultations.php');
+=======
+
+
+
+    //////////Changer l'ecriture de deliver response 
+    /////////// dans Modules/connexion_db rajouter et changer le( $login = "root", $mdp = "qvk1hXX_THrRfD*Q"; //Protège le serveur MySQL ) ==> pour valentane
+
+
+
+
+    require('../Modules/connexion_db.php');
+    require('functions_consultations.php');
+>>>>>>> 17eea6551f6e9a1bf43eaef66574c2977407281c
 
 /// Identification du type de méthode HTTP envoyée par le client
 $http_method = $_SERVER['REQUEST_METHOD'];
 
+<<<<<<< HEAD
 switch ($http_method){
+=======
+    switch ($http_method){
+        case 'GET' :
+            if (isset($_GET['id'])){
+                $id=htmlspecialchars($_GET['id']);
+
+                $resultat = getConsultation($linkpdo, $id);
+                deliver_response('200', 'Affichage de la consultations par son id', $resultat);
+            } else {
+                $resultat = getAllConsultations($linkpdo);
+                deliver_response('200', 'Affichage de toutes les consultations', $resultat);
+            }
+            break;
+        
+        case 'POST' :
+            //Récupération des données dans le corps (bodPostman)
+            $posteData = file_get_contents('php://input');
+            
+            //Reçoit du json et renvoie une adpatation exploitable en pho, le paramètre true met les données dans un tableau.
+            $data = json_decode($posteData, true); 
+
+            if (isset($data['date_consultation']) && isset($data['heure_debut']) && isset($data['duree'])) {
+                $resultat = addConsultation($linkpdo, $data['date_consultation'], $data['heure_debut'], $data['duree']);
+                
+                // Le troisième paramètre est null car on ne recupère aucune données
+                deliver_response('200', 'Création de la consultation', null);
+            } else {
+                deliver_response('400', 'Des données requises sont manquantes', null);
+            }
+            break;
+        /*
+        case 'PATCH' : 
+            if (isset($_GET['id]) == true){
+
+            }
+
+
+>>>>>>> 17eea6551f6e9a1bf43eaef66574c2977407281c
 
     case "GET" :
 
@@ -18,6 +71,7 @@ switch ($http_method){
             //Appel de la fonction d'affichage d'une consultation
             $matchingData=getConsultationById($linkpdo, $id);
 
+<<<<<<< HEAD
             deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"]);
 
         } else {
@@ -30,6 +84,10 @@ switch ($http_method){
     break;
 
     case "POST" :
+=======
+
+            break;
+>>>>>>> 17eea6551f6e9a1bf43eaef66574c2977407281c
 
         // Récupération des données dans le corps
         $postedData = file_get_contents('php://input');
@@ -47,6 +105,7 @@ switch ($http_method){
         
     break;
 
+<<<<<<< HEAD
     case "PATCH" :
 
         if(isset($_GET['id']) == true) {
@@ -82,4 +141,10 @@ switch ($http_method){
     break;
 
 }
+=======
+        case default : 
+            break;
+        */
+    }
+>>>>>>> 17eea6551f6e9a1bf43eaef66574c2977407281c
 ?>
