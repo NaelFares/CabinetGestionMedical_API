@@ -1,5 +1,14 @@
 <?php 
 
+
+
+
+    //////////Changer l'ecriture de deliver response 
+    /////////// dans Modules/connexion_db rajouter et changer le( $login = "root", $mdp = "qvk1hXX_THrRfD*Q"; //Protège le serveur MySQL ) ==> pour valentane
+
+
+
+
     require('../Modules/connexion_db.php');
     require('functions_consultations.php');
 
@@ -7,13 +16,13 @@
 
     switch ($http_method){
         case 'GET' :
-            if (($_GET['id']) == true){
+            if (isset($_GET['id'])){
                 $id=htmlspecialchars($_GET['id']);
 
-                $resultat = getAllConsultations($linkpdo, $id);
+                $resultat = getConsultation($linkpdo, $id);
                 deliver_response('200', 'Affichage de la consultations par son id', $resultat);
             } else {
-                $resultat = getConsultation($linkpdo);
+                $resultat = getAllConsultations($linkpdo);
                 deliver_response('200', 'Affichage de toutes les consultations', $resultat);
             }
             break;
