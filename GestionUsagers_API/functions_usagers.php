@@ -42,13 +42,13 @@ function getPatientsById($linkpdo, $idP) {
 
         $reqgetPatientsById->execute();
 
-        if ($reqLireUnePhrase == false) {
+        if ($reqgetPatientsById == false) {
             echo "Erreur dans l'execution de la requête d'affichage d'une seule phrase par un Id.";
             $response['statusCode'] = 400;
             $response['statusMessage'] = "Syntaxe de la requête non conforme";
         } else {
             // On récupère toutes les phrases
-            $data = $reqLireUnePhrase->fetchAll(PDO::FETCH_ASSOC);
+            $data = $reqgetPatientsById->fetchAll(PDO::FETCH_ASSOC);
 
             $response['statusCode'] = 200; // Status code
             $response['statusMessage'] = "La requête a réussi";
@@ -141,7 +141,7 @@ function createPatient($linkpdo, $civilite, $nom, $prenom, $adresse, $ville, $cp
                         $msgErreur = "Le patient a été ajouté avec succès !";
                         $response['statusCode'] = 200; // Status code
                         $response['statusMessage'] = "La requête a réussi";
-                        $response['data'] = $msgErreur; // Stockage de la phrase dans le tableau de réponse
+                        $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
                     }
                 
                 }   
@@ -152,11 +152,13 @@ function createPatient($linkpdo, $civilite, $nom, $prenom, $adresse, $ville, $cp
 }
 
 // Modifier partiellement un objet 
-function patchChuckFact($linkpdo, $id, $phrase=null, $vote=null, $faute=null , $signalement=null,  $civilite, $nom, $prenom, $adresse, $ville, $cp, $date_naissance, $lieu_naissance, $num_secu_sociale, $idM ) {
+function patchPatient($linkpdo, $id, $civilite=null, $nom=null, $prenom=null, $adresse=null, $ville=null, $cp=null, $date_naissance=null, $lieu_naissance=null, $num_secu_sociale=null, $idM=null ) {
 
     $response = array(); // Initialisation du tableau de réponse
 
-    $reqRecupInfo = $linkpdo->prepare('SELECT * FROM chuckn_facts where id = :id');
+    $msgErreur = ""; // Déclaration de la variable de message d'erreur
+
+    $reqRecupInfo = $linkpdo->prepare('SELECT * FROM patient where idP = :id');
 
     if ($reqRecupInfo == false) {
         echo "Erreur dans la préparation de la requête de récuperation d'info";
@@ -164,56 +166,96 @@ function patchChuckFact($linkpdo, $id, $phrase=null, $vote=null, $faute=null , $
 
         $reqRecupInfo->bindParam(':id', $id, PDO::PARAM_STR); 
         $reqRecupInfo->execute();
-
     }
     $valeurObjetCourant = $reqRecupInfo->fetch();
 
-    $reqPatchUnePhrase = $linkpdo->prepare('UPDATE chuckn_facts SET phrase = :phrase, vote = :vote, date_modif = :date_modif, faute = :faute, signalement = :signalement WHERE id = :id');
+     // Préparation de la requête d'insertion
+    // La prochaine fois utiliser + de paramètres dans le where pour éviter de modifier les infos d'un homonyme 
+    $reqModification = $linkpdo->prepare('UPDATE patient SET civilite = :nouvelleCivilite, nom = :nouveauNom, prenom = :nouveauPrenom, adresse = :nouvelleAdresse, ville = :nouvelleVille, cp = :nouveauCp, date_naissance = :nouvelleDate_naissance, lieu_naissance = :nouveauLieu_naissance, num_secu_sociale = :nouveauNum_secu_sociale, idM = :nouveauIdM WHERE idP = :idP');
 
-    if ($reqPatchUnePhrase == false) {
-        echo "Erreur dans la préparation de la requête de modification partielle d'une phrase.";
+    if ($reqModification === false) {
+        echo "Erreur de préparation de la requête.";
     } else {
 
-        if($phrase == null) {
-            $reqPatchUnePhrase->bindParam(':phrase', $valeurObjetCourant['phrase'], PDO::PARAM_STR); 
+        if($civilite == null) {
+            $reqModification->bindParam(':nouvelleCivilite', $valeurObjetCourant['civilite'], PDO::PARAM_STR); 
         } else {
-            $reqPatchUnePhrase->bindParam(':phrase', $phrase, PDO::PARAM_STR); 
+            $reqModification->bindParam(':nouvelleCivilite', $civilite, PDO::PARAM_STR); 
         }
 
-        if($vote == null) {
-            $reqPatchUnePhrase->bindParam(':vote', $valeurObjetCourant['vote'], PDO::PARAM_STR); 
+        if($nom == null) {
+            $reqModification->bindParam(':nouveauNom', $valeurObjetCourant['nom'], PDO::PARAM_STR); 
         } else {
-            $reqPatchUnePhrase->bindParam(':vote', $vote, PDO::PARAM_STR); 
-        }
-        
-        //Pour mettre la date actuelle lors de la modification
-        $date_courante = date("Y-m-d H:i:s" );
-    
-        $reqPatchUnePhrase->bindParam(':date_modif', $date_courante, PDO::PARAM_STR); 
-        
-        if($faute == null) {
-            $reqPatchUnePhrase->bindParam(':faute', $valeurObjetCourant['faute'], PDO::PARAM_STR); 
-        } else {
-            $reqPatchUnePhrase->bindParam(':faute', $faute, PDO::PARAM_STR); 
+            $reqModification->bindParam(':nouveauNom', $nom, PDO::PARAM_STR); 
         }
 
-        if($signalement == null) {
-            $reqPatchUnePhrase->bindParam(':signalement', $valeurObjetCourant['signalement'], PDO::PARAM_STR); 
+        if($prenom == null) {
+            $reqModification->bindParam(':nouveauPrenom', $valeurObjetCourant['prenom'], PDO::PARAM_STR); 
         } else {
-            $reqPatchUnePhrase->bindParam(':signalement', $signalement, PDO::PARAM_STR); 
+            $reqModification->bindParam(':nouveauPrenom', $prenom, PDO::PARAM_STR); 
         }
 
-        $reqPatchUnePhrase->bindParam(':id', $id, PDO::PARAM_STR); 
+        if($adresse == null) {
+            $reqModification->bindParam(':nouvelleAdresse', $valeurObjetCourant['adresse'], PDO::PARAM_STR); 
+        } else {
+            $reqModification->bindParam(':nouvelleAdresse', $adresse, PDO::PARAM_STR); 
+        }
 
-        $reqPatchUnePhrase->execute();
+        if($ville == null) {
+            $reqModification->bindParam(':nouvelleVille', $valeurObjetCourant['ville'], PDO::PARAM_STR); 
+        } else {
+            $reqModification->bindParam(':nouvelleVille', $ville, PDO::PARAM_STR); 
+        }
 
-        if ($reqPatchUnePhrase == false) {
-            echo "Erreur dans l'execution de la requête de création d'une phrase.";
+        if($cp == null) {
+            $reqModification->bindParam(':nouveauCp', $valeurObjetCourant['cp'], PDO::PARAM_STR); 
+        } else {
+            $reqModification->bindParam(':nouveauCp', $cp, PDO::PARAM_STR); 
+        }
+
+        if($date_naissance == null) {
+            $reqModification->bindParam(':nouvelleDate_naissance', $valeurObjetCourant['date_naissance'], PDO::PARAM_STR); 
+        } else {
+            $reqModification->bindParam(':nouvelleDate_naissance', $date_naissance, PDO::PARAM_STR); 
+        }
+
+        if($lieu_naissance == null) {
+            $reqModification->bindParam(':nouveauLieu_naissance', $valeurObjetCourant['lieu_naissance'], PDO::PARAM_STR); 
+        } else {
+            $reqModification->bindParam(':nouveauLieu_naissance', $lieu_naissance, PDO::PARAM_STR); 
+        }
+
+        if($num_secu_sociale == null) {
+            $reqModification->bindParam(':nouveauNum_secu_sociale', $valeurObjetCourant['num_secu_sociale'], PDO::PARAM_STR); 
+        } else {
+            $reqModification->bindParam(':nouveauNum_secu_sociale', $num_secu_sociale, PDO::PARAM_STR); 
+        }
+
+        // Vérification si un médecin référent a été choisi et que la valeur n'est pas aucun
+        if($idM == "Aucun" || $idM == null)  {
+        // Exécuter la requête avec NULL
+        $idMedecin = null; 
+        } else {
+        $idMedecin = $idM;      
+        }
+
+        $reqModification->bindParam(':nouveauIdM', $idMedecin, PDO::PARAM_INT);
+
+        // Paramètres du where
+        $reqModification->bindParam(':idP', $id, PDO::PARAM_STR);
+
+        // Exécution de la requête
+        $reqModification->execute();
+
+        if ($reqModification == false) {
+            $msgErreur = "Erreur dans l'execution de la requête de modification d'un patient";
             $response['statusCode'] = 400;
             $response['statusMessage'] = "Syntaxe de la requête non conforme";
         } else {
+            $msgErreur = "La requête a réussi, Le patient a été modifié avec succès !";
             $response['statusCode'] = 200; // Status code
             $response['statusMessage'] = "La requête a réussi, modification partielle effectuée";
+            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
         }
     }
 
@@ -221,31 +263,73 @@ function patchChuckFact($linkpdo, $id, $phrase=null, $vote=null, $faute=null , $
 }
 
 
-/// Ajouter une phrase
-function deleteChuckFact($linkpdo, $id) {
+
+function deletePatient($linkpdo, $id) {
 
     $response = array(); // Initialisation du tableau de réponse
 
-    $reqDeleteUnePhrase = $linkpdo->prepare('DELETE FROM chuckn_facts WHERE id = :id');
+    // Préparation de la requête de test de présence d'une consultation pour ce patient
+    $reqExisteDeja = $linkpdo->prepare('SELECT COUNT(*) FROM consultation WHERE idP = :idP');
 
-    if ($reqDeleteUnePhrase == false) {
-        echo "Erreur dans la préparation de la requête de suppression d'une phrase.";
+    //Test de la requete de présence d'une consultation => die si erreur
+    if($reqExisteDeja == false) {
+        die("Erreur de préparation de la requête de test de présence de consultations.");
     } else {
 
-        $reqDeleteUnePhrase->bindParam(':id', $id, PDO::PARAM_STR); 
+        $reqExisteDeja->bindParam(':idP', $id , PDO::PARAM_STR);
 
-        $reqDeleteUnePhrase->execute();
+        // Exécution de la requête
+        $reqExisteDeja->execute();
 
-        if ($reqDeleteUnePhrase == false) {
-            echo "Erreur dans l'execution de la requête de création d'une phrase.";
-            $response['statusCode'] = 400;
-            $response['statusMessage'] = "Syntaxe de la requête non conforme";
+        //Vérification de la bonne exécution de la requete ExisteDéja
+        //Si oui on arrete et on affiche une erreur
+        //Si non on execute la requete
+        if($reqExisteDeja == false) {
+            die("Erreur dans l'exécution de la requête de test de présence d'une consultation.");
         } else {
-            // On récupère toutes les phrases
-            $data = $reqDeleteUnePhrase->fetchAll(PDO::FETCH_ASSOC);
+            // Récupération du résultat
+            $nbConsultations = $reqExisteDeja->fetchColumn();
 
-            $response['statusCode'] = 200; // Status code
-            $response['statusMessage'] = "La requête a réussi, suppression effectuée";
+            // Vérification si la consultation existe déjà
+            if ($nbConsultations > 0) {
+                $reqDeleteConsultationDuPatient = $linkpdo->prepare('DELETE FROM consultation WHERE idP = :idP');
+
+                if($reqDeleteConsultationDuPatient == false) {
+                    die("Erreur de préparation de la requête de suppression de consultations.");
+                } else {
+                    $reqDeleteConsultationDuPatient->bindParam(':idP', $id , PDO::PARAM_STR);
+    
+                    // Exécution de la requête
+                    $reqDeleteConsultationDuPatient->execute();
+                }
+            }
+
+            // Préparation de la requête de suppression
+            // La prochaine fois utiliser + de paramètres dans le where pour éviter de supprimer les infos d'un homonyme  
+            $reqSuppression = $linkpdo->prepare('DELETE FROM patient WHERE idP = :idP');
+
+            if ($reqSuppression === false) {
+                echo "Erreur de préparation de la requête.";
+            } else {
+                // Liaison des paramètres
+                $reqSuppression->bindParam(':idP', $id, PDO::PARAM_STR);
+                $reqSuppression->execute();
+
+                if ($reqSuppression == false) {
+                    $msgErreur = "Erreur dans l'exécution de la requête de suppression : ";
+                    $response['statusCode'] = 400;
+                    $response['statusMessage'] = "Syntaxe de la requête non conforme";
+                } else {
+                    // On récupère toutes les phrases
+                    $data = $reqSuppression->fetchAll(PDO::FETCH_ASSOC);
+                    
+                    $msgErreur = "Le patient a été supprimé avec succès !";
+                    $response['statusCode'] = 200; // Status code
+                    $response['statusMessage'] = "La requête a réussi, suppression effectuée";
+                    $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+
+                }
+            }
         }
     }
 
