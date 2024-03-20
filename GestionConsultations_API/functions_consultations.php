@@ -1,7 +1,7 @@
 <?php
 	/*Ce fichier contiendra toutes les définitions des fonctions de manipulations des données en SQL.*/
 
-    require('auth_API/jwt_utils.php');
+    //require('auth_API/jwt_utils.php');
 
     function getAllConsultations($linkpdo){
         $response = array(); // Initialisation du tableau de la réponse
@@ -21,8 +21,8 @@
                 $Consultations = $reqAllConsulations->fetchAll(PDO::FETCH_ASSOC);
 
                 $response['statusCode'] = 200;
-                $response['statusMessage'] = "Affichage de toutes les consultations"
-                $response['data'] = $data;
+                $response['statusMessage'] = "Affichage de toutes les consultations";
+                $response['data'] = $Consultations;
             }
         }
         return $response;
@@ -47,7 +47,7 @@
                 $Consultations = $reqAllConsulations->fetchAll(PDO::FETCH_ASSOC);
 
                 $response['statusCode'] = 200;
-                $response['statusMessage'] = "Affichage de la consultation"
+                $response['statusMessage'] = "Affichage de la consultation";
                 $response['data'] = $data;
             }
         }
