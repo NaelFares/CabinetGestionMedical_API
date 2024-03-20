@@ -1,7 +1,7 @@
 <?php
 
 /// Envoi de la réponse au Client
-function readMedecin($linkpdo) {
+function getAllMedecins($linkpdo) {
 
     $response = array(); // Initialisation du tableau de réponse
 
@@ -29,7 +29,7 @@ function readMedecin($linkpdo) {
     return $response; // Retour du tableau de réponse
 }
 
-function readMedecinParId($linkpdo, $id) {
+function getMedecinById($linkpdo, $id) {
 
     $response = array(); // Initialisation du tableau de réponse
 
@@ -172,14 +172,17 @@ function patchMedecin($linkpdo, $id, $civilite=null, $nom=null, $prenom=null) {
 
         $reqPatchUnMedecin->execute();
 
-        if ($reqPatchUnMedecin == false) {
+        $errorInfo = $reqPatchUnMedecin->errorInfo();
+
+        if ($errorInfo[0] != '00000') {
             echo "Erreur dans l'execution de la requête de modification d'un medecin.";
             $response['statusCode'] = 400;
-            $response['statusMessage'] = "Syntaxe de la requête non conforme";
+            $response['statusMessage'] = "Erreur lors de l'exécution de la requête : " . $errorInfo[2];
         } else {
             $response['statusCode'] = 200; // Status code
             $response['statusMessage'] = "La requête a réussie, modification partielle effectuée";
         }
+
     }
 
     return $response; // Retour du tableau de réponse
