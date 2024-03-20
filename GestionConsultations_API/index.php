@@ -1,27 +1,51 @@
 <?php 
 
-    require('Modules/connexion_db.php');
-    require('functions_consultations');
-    require('auth_API/jwt_utils.php');
+    require('../Modules/connexion_db.php');
+    require('functions_consultations.php');
 
     $http_method = $_SERVER['REQUEST_METHOD'];
 
     switch ($http_method){
         case 'GET' :
-            if (is_null($idConsultation)){
-                $resultat = getAllConsultations($linkpdo);
+            if (($_GET['id']) == true){
+                $id=htmlspecialchars($_GET['id']);
+
+                $resultat = getAllConsultations($linkpdo, $id);
+                deliver_response('200', 'Affichage de la consultations par son id', $resultat);
+            } else {
+                $resultat = getConsultation($linkpdo);
                 deliver_response('200', 'Affichage de toutes les consultations', $resultat);
+            }
+            break;
+        
+        case 'POST' :
+            //Récupération des données dans le corps (bodPostman)
+            $posteData = file_get_contents('php://input');
+            
+            //Reçoit du json et renvoie une adpatation exploitable en pho, le paramètre true met les données dans un tableau.
+            $data = json_decode($posteData, true); 
+
+            if (isset($data['date_consultation']) && isset($data['heure_debut']) && isset($data['duree'])) {
+                $resultat = addConsultation($linkpdo, $data['date_consultation'], $data['heure_debut'], $data['duree']);
+                
+                // Le troisième paramètre est null car on ne recupère aucune données
+                deliver_response('200', 'Création de la consultation', null);
+            } else {
+                deliver_response('400', 'Des données requises sont manquantes', null);
+            }
+            break;
+        /*
+        case 'PATCH' : 
+            if (isset($_GET['id]) == true){
+
             }
 
 
 
 
-            break;
-        
-        case 'POST' :
-            break;
 
-        case 'PATCH' : 
+
+
             break;
 
         case 'DEL' :
@@ -29,5 +53,6 @@
 
         case default : 
             break;
-
+        */
     }
+?>
