@@ -9,7 +9,7 @@ function getAllMedecins($linkpdo) {
 
     if ($reqAllMedecin == false) {
         $response['statusCode'] = 400;
-        $response['statusMessage'] = "Erreur dans l'execution de la requête d'affichage.";    
+        $response['statusMessage'] = "Erreur dans la préparation de la requête d'affichage.";    
     } else {
         $reqAllMedecin->execute();
 
@@ -71,7 +71,7 @@ function createMedecin($linkpdo, $civilite, $nom, $prenom) {
         //Test de la requete de présence d'un medecin => die si erreur
         if($reqExisteDeja == false) {
             $response['statusCode'] = 400;
-            $response['statusMessage'] = "Erreur dans l'execution de la requête de création d'un medecin.";        
+            $response['statusMessage'] = "Erreur dans la préparation de la requête de pré création d'un medecin.";        
         } else {
 
             $reqExisteDeja->bindParam(':nom', $nom, PDO::PARAM_STR);
@@ -260,7 +260,7 @@ function deleteMedecin($linkpdo, $id) {
                     //Si non on execute la requete
                     if($reqReferentExiste == false) {
                         $response['statusCode'] = 500;
-                        $response['statusMessage'] = "Erreur dans la préparation de la requête de suppression d'un medecin (il est réferent) (2) ";
+                        $response['statusMessage'] = "Erreur dans l'execution de la requête de suppression d'un medecin (il est réferent) (2) ";
                         return $response;                       
                     } else {
                         // Récupération du résultat
@@ -287,7 +287,7 @@ function deleteMedecin($linkpdo, $id) {
 
                     if ($reqDeleteMedecin == false) {
                         $response['statusCode'] = 400;
-                        $response['statusMessage'] = "Erreur dans l'execution de la requête de suppression d'un medecin.";                    } else {
+                        $response['statusMessage'] = "Erreur dans la préparation de la requête de suppression d'un medecin.";                    } else {
 
                         $reqDeleteMedecin->bindParam(':idM', $id, PDO::PARAM_STR); 
 
