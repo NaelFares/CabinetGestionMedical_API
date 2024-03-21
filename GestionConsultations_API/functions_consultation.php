@@ -9,18 +9,18 @@
 
         if($reqAllConsultations == false){
             $response['statusCode'] = 400;
-            $response['statusMessage'] = "Erreur dans l'execution de la requête d'affichage.";
+            $response['statusMessage'] = "Syntaxe de la requête non conforme";
         } else {
             $reqAllConsultations->execute();
 
             if($reqAllConsultations == false){
                 $response['statusCode'] = 400;
-                $response['statusMessage'] = "Erreur dans l'execution de la requête d'affichage.";
+                $response['statusMessage'] = "Syntaxe de la requête non conforme";
             } else {
                 $data = $reqAllConsultations->fetchAll(PDO::FETCH_ASSOC);
 
                 $response['statusCode'] = 200;
-                $response['statusMessage'] = "Affichage de toutes les consultations";
+                $response['statusMessage'] = "La requête à réussi";
                 $response['data'] = $data;
             }
         }
@@ -35,7 +35,7 @@
 
         if($reqConsultationParId == false){
             $response['statusCode'] = 400;
-            $response['statusMessage'] = "Erreur dans la préparation de la requête d'affichage d'une seule consultation.";
+            $response['statusMessage'] = "Syntaxe de la requête non conforme";
         } else {
             $reqConsultationParId->bindParam(":idC", $id, PDO::PARAM_STR);
 
@@ -43,12 +43,12 @@
 
             if($reqConsultationParId == false){
                 $response['statusCode'] = 400;
-                $response['statusMessage'] = "Erreur dans l'execution de la requête d'affichage";
+                $response['statusMessage'] = "Syntaxe de la requête non conforme";
             } else {
                 // On récupère toutes les consultations
                 $data = $reqConsultationParId->fetchAll(PDO::FETCH_ASSOC);
                 $response['statusCode'] = 200;
-                $response['statusMessage'] = "La requête a réussie";
+                $response['statusMessage'] = "La requête a réussi";
                 $response['data'] = $data;
 
             }
@@ -64,7 +64,7 @@
 
         if($reqExisteDeja == false){
             $response['statusCode'] = 400;
-            $response['statusMessage'] = "Erreur dans la préparation de la requête.";  
+            $response['statusMessage'] = "Syntaxe de la requête non conforme";  
         } else {
 
             $reqExisteDeja->bindParam(':date_consultation',$date_consultation, PDO::PARAM_STR);
@@ -75,7 +75,7 @@
 
             if ($reqExisteDeja == false){
                 $response['statusCode'] = 400;
-                $response['statusMessage'] = "Erreur dans l'execution de la requête d'avant-création d'une consultation.";
+                $response['statusMessage'] = "Syntaxe de la requête non conforme";
             } else {
 
                 $nbConsultations = $reqConsultExistDeja->fetchColumn();
@@ -83,7 +83,7 @@
                 if ($nbConsultations > 0){
                     $msgErreur = "Cette consultation est déjà enregistrée.";
                     $response['statusCode'] = 200;
-                    $response['statusMessage'] = "La requête a réussie";
+                    $response['statusMessage'] = "La requête a réussi";
                     $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
                 } else {
 
@@ -161,7 +161,7 @@
 
                                     if($reqCreateConsultation == false){
                                         $response['statusCode'] = 400;
-                                        $response['statusMessage'] = "Erreur dans la préparation de la requête de création d'une consultation.";
+                                        $response['statusMessage'] = "Syntaxe de la requête non conforme";
                                     } else {
 
                                         $reqCreateConsultation->bindParam(':date_consultation', $date_consultation, PDO::PARAM_STR);
@@ -173,13 +173,12 @@
                                         if ($reqCreateConsultation == false){
                                             $msgErreur = "Erreur dans l'execution de la requête de création";
                                             $response['statusCode'] = 400;
-                                            $response['statusMessage'] = "Erreur dans l'execution de la requête de création d'une consultation.";
+                                            $response['statusMessage'] = "Syntaxe de la requête non conforme";
                                             $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
                                         } else {
                                             $msgErreur = "La consultation a été crée avec succès";
-                                            $response['statusCode'] = 200; 
-                                            $response['statusMessage'] = "La requête a réussie";
-                                            $response['data'] = $date_consultation ." ". $heure_debut ." ". $duree; 
+                                            $response['statusCode'] = 201; 
+                                            $response['statusMessage'] = "La requête a réussi et une ressource a été crée";
                                             $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
                                         }
                                     }
@@ -227,14 +226,14 @@
                         if ($nbConsultations > 0) {
                             $msgErreur = "Cette consultation est déjà enregistrée.";
                             $response['statusCode'] = 200;
-                            $response['statusMessage'] = "La requête a réussie";
+                            $response['statusMessage'] = "La requête a réussi";
                             $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
                         } else {
                                 $reqRecupConsultation = $linkpdo->prepare('SELECT * FROM consultation where idC = :idC');
 
                                 if ($reqRecupConsultation == false) {
-                                    $response['statusCode'] = 500;
-                                    $response['statusMessage'] = "Erreur dans la préparation de la requête de récuperation d'une consultation: ";
+                                    $response['statusCode'] = 400;
+                                    $response['statusMessage'] = "Syntaxe de la requête non conforme";
                                 } else { 
                                     $reqRecupConsultation->bindParam(':idC', $id, PDO::PARAM_STR); 
                                     $reqRecupConsultation->execute();
@@ -245,8 +244,8 @@
                                 $reqPatchUneConsultation = $linkpdo->prepare('UPDATE consultation SET idM = :idM, idP = :idP, date_consultation = :date_consultation, heure_debut = :heure_debut, duree = :duree WHERE idC = :idC');
                             
                                 if ($reqPatchUneConsultation == false) {
-                                    $response['statusCode'] = 500;
-                                    $response['statusMessage'] = "Erreur dans la préparation de la requête de modification partielle d'une consultation: ";
+                                    $response['statusCode'] = 400;
+                                    $response['statusMessage'] = "Syntaxe de la requête non conforme";
                                     return $response;
                                 } else {
 
@@ -287,13 +286,12 @@
                                     $errorInfo = $reqPatchUneConsultation->errorInfo();
                             
                                     if ($errorInfo[0] != '00000') {
-                                        echo "Erreur dans l'execution de la requête de modification d'un medecin.";
                                         $response['statusCode'] = 400;
-                                        $response['statusMessage'] = "Erreur lors de l'exécution de la requête : " . $errorInfo[2];
+                                        $response['statusMessage'] = "Syntaxe de la requête non conforme"
                                     } else {
                                         $msgErreur = "La consultation a bien été modifiée"; // Stockage du message dans le tableau de réponse
                                         $response['statusCode'] = 200; // Status code
-                                        $response['statusMessage'] = "La requête a réussie, modification partielle effectuée";
+                                        $response['statusMessage'] = "La requête a réussi";
                                         $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
 
                                     }
@@ -313,7 +311,7 @@
 
         if ($reqDeleteConsultation == false){
             $response['statusCode'] = 400;
-            $response['statusMessage'] = "Erreur dans la préparation de la requête de suppression d'une consultation.";
+            $response['statusMessage'] = "Syntaxe de la requête non conforme";
 
         } else{
 
@@ -324,7 +322,7 @@
             if($reqDeleteConsultation == false){
                 $msgErreur = "Erreur dans l'exécution de la requête de suppression : ";
                 $response['statusCode'] = 400;
-                $response['statusMessage'] = "Erreur dans l'execution de la requête de suppression d'une consultation";
+                $response['statusMessage'] = "Syntaxe de la requête non conforme";
                 $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
             } else {
                 
@@ -332,7 +330,7 @@
 
                 $msgErreur = "La consultation a été supprimée avec succès !";
                 $response['statusCode'] = 200; 
-                $response['statusMessage'] = "La requête a réussie, suppression effectuée";
+                $response['statusMessage'] = "La requête a réussi";
                 $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
 
             }
