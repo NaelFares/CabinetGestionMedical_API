@@ -111,13 +111,15 @@ function createMedecin($linkpdo, $civilite, $nom, $prenom) {
                         $reqCreateMedecin->execute();
 
                         if ($reqCreateMedecin == false) {
+                            $msgErreur = "Erreur d'exécution de la requête";
                             $response['statusCode'] = 400;
-                            $response['statusMessage'] = "Erreur dans l'execution de la requête de création d'une phrase.";
+                            $response['statusMessage'] = "Syntaxe de la requête non conforme";
+                            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse    
                         } else {
-
+                            $msgErreur = "Le medecin a été ajouté avec succès !";
                             $response['statusCode'] = 200; // Status code
-                            $response['statusMessage'] = "La requête a réussi";
-                            $response['data'] = $civilite."  ".$nom." ".$prenom; // Stockage de la phrase dans le tableau de réponse
+                            $response['statusMessage'] = "La requête a réussie";
+                            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
                         }
                     }
                 }
@@ -133,99 +135,61 @@ function patchMedecin($linkpdo, $id, $civilite=null, $nom=null, $prenom=null) {
 
     $msgErreur = ""; // Déclaration de la variable de message d'erreur
 
-    // Préparation de la requête de test de présence d'un medecin
-    $reqExisteDeja = $linkpdo->prepare('SELECT COUNT(*) FROM medecin WHERE civilite = :civilite, nom = :nom AND prenom = :prenom');
+    $reqRecupMedecin = $linkpdo->prepare('SELECT * FROM medecin where idM = :idM');
 
-    //Test de la requete de présence d'un medecin => die si erreur
-    if($reqExisteDeja == false) {
-        die("Erreur de préparation de la requête de test de présence d'un medecin.");
+    if ($reqRecupMedecin == false) {
+        $response['statusCode'] = 500;
+        $response['statusMessage'] = "Erreur dans la préparation de la requête de récuperation du medecin: ";
+        return $response;
+    } else { 
+        $reqRecupMedecin->bindParam(':idM', $id, PDO::PARAM_STR); 
+        $reqRecupMedecin->execute();
+    }
+
+    $valeurObjetCourant = $reqRecupMedecin->fetch();
+
+    $reqPatchUnMedecin = $linkpdo->prepare('UPDATE medecin SET civilite = :civilite, nom = :nom, prenom = :prenom WHERE idM = :idM');
+
+    if ($reqPatchUnMedecin == false) {
+        $response['statusCode'] = 500;
+        $response['statusMessage'] = "Erreur dans la préparation de la requête de modification partielle d'un medecin: ";
+        return $response;
     } else {
 
-        // Liaison des paramètres
-        $reqExisteDeja->bindParam(':civilite', $civilite, PDO::PARAM_STR);
-        $reqExisteDeja->bindParam(':nom', $nom, PDO::PARAM_STR);
-        $reqExisteDeja->bindParam(':prenom', $prenom, PDO::PARAM_STR);
-
-        // Exécution de la requête
-        $reqExisteDeja->execute();
-
-        //Vérification de la bonne exécution de la requete ExisteDéja
-        //Si oui on arrete et on affiche une erreur
-        //Si non on execute la requete
-        if($reqExisteDeja == false) {
-            die("Erreur dans l'exécution de la requête de test de présence d'un medecin.");
+        if($civilite == null) {
+            $reqPatchUnMedecin->bindParam(':civilite', $valeurObjetCourant['civilite'], PDO::PARAM_STR); 
         } else {
-
-            // Récupération du résultat
-            $nbMedecins = $reqExisteDeja->fetchColumn();
-
-            // Vérification si le patient existe déjà
-            if ($nbMedecins > 0) {
-                $msgErreur = "Ce medecin est déjà enregistré.";
-                $response['statusCode'] = 200;
-                $response['statusMessage'] = "La requête a réussie";
-                $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
-            } else {
-
-                    $reqRecupMedecin = $linkpdo->prepare('SELECT * FROM medecin where idM = :idM');
-
-                    if ($reqRecupMedecin == false) {
-                        $response['statusCode'] = 500;
-                        $response['statusMessage'] = "Erreur dans la préparation de la requête de récuperation du medecin: ";
-                        return $response;
-                    } else { 
-                        $reqRecupMedecin->bindParam(':idM', $id, PDO::PARAM_STR); 
-                        $reqRecupMedecin->execute();
-                    }
-
-                    $valeurObjetCourant = $reqRecupMedecin->fetch();
-
-                    $reqPatchUnMedecin = $linkpdo->prepare('UPDATE medecin SET civilite = :civilite, nom = :nom, prenom = :prenom WHERE idM = :idM');
-
-                    if ($reqPatchUnMedecin == false) {
-                        $response['statusCode'] = 500;
-                        $response['statusMessage'] = "Erreur dans la préparation de la requête de modification partielle d'un medecin: ";
-                        return $response;
-                    } else {
-
-                        if($civilite == null) {
-                            $reqPatchUnMedecin->bindParam(':civilite', $valeurObjetCourant['civilite'], PDO::PARAM_STR); 
-                        } else {
-                            $reqPatchUnMedecin->bindParam(':civilite', $civilite, PDO::PARAM_STR); 
-                        }
-
-                        if($nom == null) {
-                            $reqPatchUnMedecin->bindParam(':nom', $valeurObjetCourant['nom'], PDO::PARAM_STR); 
-                        } else {
-                            $reqPatchUnMedecin->bindParam(':nom', $nom, PDO::PARAM_STR); 
-                        }
-                        
-                        if($prenom == null) {
-                            $reqPatchUnMedecin->bindParam(':prenom', $valeurObjetCourant['prenom'], PDO::PARAM_STR); 
-                        } else {
-                            $reqPatchUnMedecin->bindParam(':prenom', $prenom, PDO::PARAM_STR); 
-                        }
-
-                        $reqPatchUnMedecin->bindParam(':idM', $id, PDO::PARAM_STR); 
-
-                        $reqPatchUnMedecin->execute();
-
-                        if ($reqPatchUnMedecin == false ) {
-                            $msgErreur = "Erreur dans l'execution de la requête de modification d'un médecin";
-                            $response['statusCode'] = 400;
-                            $response['statusMessage'] = "Erreur lors de l'exécution de la requête : ";
-                            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
-                        } else {
-                            $msgErreur = "La requête a réussi, Le médecin a été modifié avec succès !";
-                            $response['statusCode'] = 200; // Status code
-                            $response['statusMessage'] = "La requête a réussie, modification partielle effectuée";
-                            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
-                        }
-
-                    }
-                }
-            }
+            $reqPatchUnMedecin->bindParam(':civilite', $civilite, PDO::PARAM_STR); 
         }
+
+        if($nom == null) {
+            $reqPatchUnMedecin->bindParam(':nom', $valeurObjetCourant['nom'], PDO::PARAM_STR); 
+        } else {
+            $reqPatchUnMedecin->bindParam(':nom', $nom, PDO::PARAM_STR); 
+        }
+        
+        if($prenom == null) {
+            $reqPatchUnMedecin->bindParam(':prenom', $valeurObjetCourant['prenom'], PDO::PARAM_STR); 
+        } else {
+            $reqPatchUnMedecin->bindParam(':prenom', $prenom, PDO::PARAM_STR); 
+        }
+
+        $reqPatchUnMedecin->bindParam(':idM', $id, PDO::PARAM_STR); 
+
+        $reqPatchUnMedecin->execute();
+
+        if ($reqPatchUnMedecin == false ) {
+            $msgErreur = "Erreur dans l'execution de la requête de modification d'un médecin";
+            $response['statusCode'] = 400;
+            $response['statusMessage'] = "Erreur lors de l'exécution de la requête : ";
+            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+        } else {
+            $msgErreur = "La requête a réussi, Le médecin a été modifié avec succès !";
+            $response['statusCode'] = 200; // Status code
+            $response['statusMessage'] = "La requête a réussie, modification partielle effectuée";
+            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+        }
+    }
     return $response; // Retour du tableau de réponse
 }
 
@@ -276,10 +240,6 @@ function deleteMedecin($linkpdo, $id) {
                     $reqDeleteConsultationDuMedecin->execute();
                 }
             }
-
-                ////////////////////////////////////////////////////////////////////////////////////////////////////////
-                //////////////////////////////// Test de présence de médecin référent //////////////////////////////////
-                ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                  // Préparation de la requête de test de présence d'un medecin referent
                 $reqReferentExiste = $linkpdo->prepare('SELECT COUNT(*) FROM patient WHERE idM = :idM');
@@ -335,14 +295,19 @@ function deleteMedecin($linkpdo, $id) {
                         $reqDeleteMedecin->execute();
 
                         if ($reqDeleteMedecin == false) {
+                            $msgErreur = "Erreur dans l'exécution de la requête de suppression : ";
                             $response['statusCode'] = 400;
-                            $response['statusMessage'] = "Erreur dans l'execution de la requête de suppression d'un medecin.";
+                            $response['statusMessage'] = "Syntaxe de la requête non conforme";
+                            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+
                         } else {
                             // On récupère toutes les phrases
                             $data = $reqDeleteMedecin->fetchAll(PDO::FETCH_ASSOC);
 
+                            $msgErreur = "Le medecin a été supprimé avec succès !";
                             $response['statusCode'] = 200; // Status code
-                            $response['statusMessage'] = "La requête a réussie, suppression effectuée";
+                            $response['statusMessage'] = "La requête a réussi, suppression effectuée";
+                            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
                         }
                     }
                 }
