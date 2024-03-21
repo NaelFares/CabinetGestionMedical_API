@@ -59,9 +59,9 @@ switch ($http_method){
             //Traitement des données
             
             //Appel de la fonction de modification partielle d’une consultation
-            $matchingData=patchConsultation($linkpdo, $id , $data['id_medecin'], null, $data['date_consult'], $data['heure_consult'], null);
+            $matchingData=patchConsultation($linkpdo, $id , $data['id_medecin'], $data['id_usager'], $data['date_consult'], $data['heure_consult'], $data['duree_consult']);
 
-            deliver_response($matchingData["statusCode"], $matchingData["statusMessage"]);
+            deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"] );
         }
 
     break;
@@ -76,7 +76,7 @@ switch ($http_method){
             //Appel de la fonction de suppression d'une consultation
             $matchingData=deleteConsultation($linkpdo, $id);
 
-            deliver_response($matchingData["statusCode"], $matchingData["statusMessage"]);
+            deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"]);
         }
         
     break;

@@ -224,13 +224,15 @@
                         // Vérification si le patient existe déjà
                         if ($nbConsultations > 0) {
                             $msgErreur = "Cette consultation est déjà enregistrée.";
+                            $response['statusCode'] = 200;
+                            $response['statusMessage'] = "La requête a réussie";
+                            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
                         } else {
                                 $reqRecupConsultation = $linkpdo->prepare('SELECT * FROM consultation where idC = :idC');
 
                                 if ($reqRecupConsultation == false) {
                                     $response['statusCode'] = 500;
                                     $response['statusMessage'] = "Erreur dans la préparation de la requête de récuperation d'une consultation: ";
-                                    return $response;
                                 } else { 
                                     $reqRecupConsultation->bindParam(':idC', $id, PDO::PARAM_STR); 
                                     $reqRecupConsultation->execute();
