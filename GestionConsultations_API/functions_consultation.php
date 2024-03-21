@@ -174,7 +174,7 @@
                                             $response['statusMessage'] = "Erreur dans l'execution de la requête de création d'une consultation.";
                                             $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
                                         } else {
-                                            $msgErreur = "La consultation a été crée avec succès"
+                                            $msgErreur = "La consultation a été crée avec succès";
                                             $response['statusCode'] = 200; 
                                             $response['statusMessage'] = "La requête a réussie";
                                             $response['data'] = $date_consultation ." ". $heure_debut ." ". $duree; 
@@ -191,7 +191,7 @@
 }
 
 
-    function patchConsultation($linkpdo, $id, $date_consultation=null, $heure_debut=null, $duree=null) {
+    function patchConsultation($linkpdo, $id, $idM=null, $idP=null, $date_consultation=null, $heure_debut=null, $duree=null) {
         $response = array();
 
         $reqRecupConsultation = $linkpdo->prepare('SELECT * FROM consultation where idC = :idC');
@@ -207,14 +207,26 @@
     
         $valeurObjetCourant = $reqRecupConsultation->fetch();
     
-        $reqPatchUneConsultation = $linkpdo->prepare('UPDATE consultation SET date_consultation = :date_consultation, heure_debut = :heure_debut, duree = :duree WHERE idC = :idC');
+        $reqPatchUneConsultation = $linkpdo->prepare('UPDATE consultation SET idM = :idM, idP = :idP, date_consultation = :date_consultation, heure_debut = :heure_debut, duree = :duree WHERE idC = :idC');
     
         if ($reqPatchUneConsultation == false) {
             $response['statusCode'] = 500;
             $response['statusMessage'] = "Erreur dans la préparation de la requête de modification partielle d'une consultation: ";
             return $response;
         } else {
-    
+
+            if($idM == null) {
+                $reqPatchUneConsultation->bindParam(':idM', $valeurObjetCourant['idM'], PDO::PARAM_STR); 
+            } else {
+                $reqPatchUneConsultation->bindParam(':idM', $idM, PDO::PARAM_STR); 
+            }
+
+            if($idP == null) {
+                $reqPatchUneConsultation->bindParam(':idP', $valeurObjetCourant['idP'], PDO::PARAM_STR); 
+            } else {
+                $reqPatchUneConsultation->bindParam(':idP', $idP, PDO::PARAM_STR); 
+            }
+
             if($date_consultation == null) {
                 $reqPatchUneConsultation->bindParam(':date_consultation', $valeurObjetCourant['date_consultation'], PDO::PARAM_STR); 
             } else {
@@ -244,7 +256,7 @@
                 $response['statusCode'] = 400;
                 $response['statusMessage'] = "Erreur lors de l'exécution de la requête : " . $errorInfo[2];
             } else {
-                $msgErreur = "La consultation a bien été modifiée" // Stockage du message dans le tableau de réponse
+                $msgErreur = "La consultation a bien été modifiée"; // Stockage du message dans le tableau de réponse
                 $response['statusCode'] = 200; // Status code
                 $response['statusMessage'] = "La requête a réussie, modification partielle effectuée";
                 $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
