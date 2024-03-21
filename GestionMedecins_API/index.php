@@ -59,7 +59,7 @@ switch ($http_method){
             //Traitement des données
             
             //Appel de la fonction de modification partielle d’une phrase
-            $matchingData=patchMedecin($linkpdo, $id , null, null, null);
+            $matchingData=patchMedecin($linkpdo, $id , null, $data['nom'], null);
 
             deliver_response($matchingData["statusCode"], $matchingData["statusMessage"]);
         }
