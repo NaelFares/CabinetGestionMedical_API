@@ -169,7 +169,7 @@
                                         $reqCreateConsultation->execute();
 
                                         if ($reqCreateConsultation == false){
-                                            $msgErreur = "Erreur dans l'execution de la requête de création"
+                                            $msgErreur = "Erreur dans l'execution de la requête de création";
                                             $response['statusCode'] = 400;
                                             $response['statusMessage'] = "Erreur dans l'execution de la requête de création d'une consultation.";
                                             $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
