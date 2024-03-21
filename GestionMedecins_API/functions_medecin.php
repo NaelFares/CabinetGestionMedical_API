@@ -91,8 +91,10 @@ function createMedecin($linkpdo, $civilite, $nom, $prenom) {
 
                 // Vérification si le patient existe déjà
                 if ($nbMedecins > 0) {
-                    $response['statusCode'] = 409;
-                    $response['statusMessage'] = "Existe déjà";
+                    $msgErreur = "Ce medecin est déjà enregistré.";
+                    $response['statusCode'] = 200;
+                    $response['statusMessage'] = "La requête a réussie";
+                    $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
                 } else {
 
                     $reqCreateMedecin = $linkpdo->prepare('INSERT INTO medecin (civilite, nom, prenom) VALUES (:civilite, :nom, :prenom)');
@@ -109,13 +111,15 @@ function createMedecin($linkpdo, $civilite, $nom, $prenom) {
                         $reqCreateMedecin->execute();
 
                         if ($reqCreateMedecin == false) {
+                            $msgErreur = "Erreur d'exécution de la requête";
                             $response['statusCode'] = 400;
-                            $response['statusMessage'] = "Erreur dans l'execution de la requête de création d'une phrase.";
+                            $response['statusMessage'] = "Syntaxe de la requête non conforme";
+                            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse    
                         } else {
-
+                            $msgErreur = "Le medecin a été ajouté avec succès !";
                             $response['statusCode'] = 200; // Status code
-                            $response['statusMessage'] = "La requête a réussi";
-                            $response['data'] = $civilite."  ".$nom." ".$prenom; // Stockage de la phrase dans le tableau de réponse
+                            $response['statusMessage'] = "La requête a réussie";
+                            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
                         }
                     }
                 }
@@ -185,9 +189,7 @@ function patchMedecin($linkpdo, $id, $civilite=null, $nom=null, $prenom=null) {
             $response['statusMessage'] = "La requête a réussie, modification partielle effectuée";
             $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
         }
-
     }
-
     return $response; // Retour du tableau de réponse
 }
 
@@ -238,10 +240,6 @@ function deleteMedecin($linkpdo, $id) {
                     $reqDeleteConsultationDuMedecin->execute();
                 }
             }
-
-                ////////////////////////////////////////////////////////////////////////////////////////////////////////
-                //////////////////////////////// Test de présence de médecin référent //////////////////////////////////
-                ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                  // Préparation de la requête de test de présence d'un medecin referent
                 $reqReferentExiste = $linkpdo->prepare('SELECT COUNT(*) FROM patient WHERE idM = :idM');
@@ -297,14 +295,19 @@ function deleteMedecin($linkpdo, $id) {
                         $reqDeleteMedecin->execute();
 
                         if ($reqDeleteMedecin == false) {
+                            $msgErreur = "Erreur dans l'exécution de la requête de suppression : ";
                             $response['statusCode'] = 400;
-                            $response['statusMessage'] = "Erreur dans l'execution de la requête de suppression d'un medecin.";
+                            $response['statusMessage'] = "Syntaxe de la requête non conforme";
+                            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+
                         } else {
                             // On récupère toutes les phrases
                             $data = $reqDeleteMedecin->fetchAll(PDO::FETCH_ASSOC);
 
+                            $msgErreur = "Le medecin a été supprimé avec succès !";
                             $response['statusCode'] = 200; // Status code
-                            $response['statusMessage'] = "La requête a réussie, suppression effectuée";
+                            $response['statusMessage'] = "La requête a réussi, suppression effectuée";
+                            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
                         }
                     }
                 }
