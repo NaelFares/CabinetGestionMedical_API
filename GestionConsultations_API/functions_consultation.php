@@ -81,8 +81,10 @@
                 $nbConsultations = $reqConsultExistDeja->fetchColumn();
 
                 if ($nbConsultations > 0){
-                    $response['statusCode'] = 409;
-                    $response['statusMessage'] = "Existe déjà";
+                    $msgErreur = "Cette consultation est déjà enregistrée.";
+                    $response['statusCode'] = 200;
+                    $response['statusMessage'] = "La requête a réussie";
+                    $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
                 } else {
 
                      // Préparation de la requête de test de chevauchement de consultation pour un medecin
@@ -221,7 +223,7 @@
                         // Récupération du résultat
                         $nbConsultations = $reqExisteDeja->fetchColumn();
 
-                        // Vérification si le patient existe déjà
+                        // Vérification si la consultation existe déjà
                         if ($nbConsultations > 0) {
                             $msgErreur = "Cette consultation est déjà enregistrée.";
                             $response['statusCode'] = 200;
