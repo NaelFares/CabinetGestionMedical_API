@@ -8,12 +8,11 @@ function getAllPatients($linkpdo) {
     $reqGetAllPatients = $linkpdo->prepare('SELECT idP, civilite, nom, prenom, adresse, ville, cp, date_naissance, lieu_naissance, num_secu_sociale, idM FROM patient');
 
         if ($reqGetAllPatients == false) {
-            echo "Erreur dans la préparation de la requête d'affichage.";
+            die "Erreur dans la préparation de la requête d'affichage.";
         } else {
             $reqGetAllPatients->execute();
 
         if ($reqGetAllPatients == false) {
-            echo "Erreur dans l'execution de la requête d'affichage.";
             $response['statusCode'] = 400;
             $response['statusMessage'] = "Syntaxe de la requête non conforme";
         } else {
@@ -35,7 +34,7 @@ function getPatientsById($linkpdo, $idP) {
     $reqgetPatientsById = $linkpdo->prepare('SELECT idP, civilite, nom, prenom, adresse, ville, cp, date_naissance, lieu_naissance, num_secu_sociale, idM FROM patient WHERE idP = :idP');
 
     if ($reqgetPatientsById == false) {
-        echo "Erreur dans la préparation de la requête d'affichage d'une seule phrase.";
+        die "Erreur dans la préparation de la requête d'affichage d'une seule phrase.";
     } else {
 
         $reqgetPatientsById->bindParam(':idP', $idP, PDO::PARAM_STR); 
@@ -43,7 +42,6 @@ function getPatientsById($linkpdo, $idP) {
         $reqgetPatientsById->execute();
 
         if ($reqgetPatientsById == false) {
-            echo "Erreur dans l'execution de la requête d'affichage d'une seule phrase par un Id.";
             $response['statusCode'] = 400;
             $response['statusMessage'] = "Syntaxe de la requête non conforme";
         } else {
@@ -137,6 +135,8 @@ function createPatient($linkpdo, $civilite, $nom, $prenom, $adresse, $ville, $cp
                         $msgErreur = "Erreur d'exécution de la requête";
                         $response['statusCode'] = 400;
                         $response['statusMessage'] = "Syntaxe de la requête non conforme";
+                        $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+
                     } else {
                         $msgErreur = "Le patient a été ajouté avec succès !";
                         $response['statusCode'] = 200; // Status code
@@ -251,6 +251,8 @@ function patchPatient($linkpdo, $id, $civilite=null, $nom=null, $prenom=null, $a
             $msgErreur = "Erreur dans l'execution de la requête de modification d'un patient";
             $response['statusCode'] = 400;
             $response['statusMessage'] = "Syntaxe de la requête non conforme";
+            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+
         } else {
             $msgErreur = "La requête a réussi, Le patient a été modifié avec succès !";
             $response['statusCode'] = 200; // Status code
@@ -319,6 +321,8 @@ function deletePatient($linkpdo, $id) {
                     $msgErreur = "Erreur dans l'exécution de la requête de suppression : ";
                     $response['statusCode'] = 400;
                     $response['statusMessage'] = "Syntaxe de la requête non conforme";
+                    $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+
                 } else {
                     // On récupère toutes les phrases
                     $data = $reqSuppression->fetchAll(PDO::FETCH_ASSOC);

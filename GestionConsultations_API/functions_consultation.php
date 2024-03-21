@@ -1,19 +1,17 @@
 <?php
 	/*Ce fichier contiendra toutes les définitions des fonctions de manipulations des données en SQL.*/
 
-    require('auth_API/jwt_utils.php');
-
     function getAllConsultations($linkpdo){
 
         $response = array(); // Initialisation du tableau de la réponse
 
-        $reqAllConsultations = $linkpdo->prepare('SELECT idM, date_consultation, heure_debut, duree, idP FROM consultation ORDER BY date_consultation DESC');
+        $reqAllConsultations = $linkpdo->prepare('SELECT idC, date_consultation, heure_debut, duree, idM, idP FROM consultation ORDER BY date_consultation DESC');
 
         if($reqAllConsultations == false){
             $response['statusCode'] = 400;
-            $response['statusMessage'] = "Erreur dans l'execution de la requête d'affichage.";        } else {
+            $response['statusMessage'] = "Erreur dans l'execution de la requête d'affichage.";
         } else {
-            $reqAllConsulations->execute();
+            $reqAllConsultations->execute();
 
             if($reqAllConsultations == false){
                 $response['statusCode'] = 400;
@@ -22,7 +20,7 @@
                 $data = $reqAllConsultations->fetchAll(PDO::FETCH_ASSOC);
 
                 $response['statusCode'] = 200;
-                $response['statusMessage'] = "Affichage de toutes les consultations"
+                $response['statusMessage'] = "Affichage de toutes les consultations";
                 $response['data'] = $data;
             }
         }
@@ -49,10 +47,10 @@
             } else {
                 // On récupère toutes les consultations
                 $data = $reqConsultationParId->fetchAll(PDO::FETCH_ASSOC);
-
                 $response['statusCode'] = 200;
                 $response['statusMessage'] = "La requête a réussie";
                 $response['data'] = $data;
+
             }
         }
         return $response;
@@ -88,28 +86,28 @@
                 } else {
 
                      // Préparation de la requête de test de chevauchement de consultation pour un medecin
-                     $reqChevauchementMedecin = $linkpdo->prepare('SELECT COUNT(*)
-                     FROM consultation
-                     WHERE idM = :idM
-                       AND date_consultation = :date_consultation
-                       AND (
-                           (:heure_debut BETWEEN heure_debut AND ADDTIME(heure_debut, duree))
-                           OR (ADDTIME(:heure_debut, :duree) BETWEEN heure_debut AND ADDTIME(heure_debut, duree))
-                           OR (heure_debut BETWEEN :heure_debut AND ADDTIME(:heure_debut, :duree))
-                           OR (ADDTIME(heure_debut, duree )BETWEEN :heure_debut AND ADDTIME(:heure_debut, :duree))
-                       )');
+                    $reqChevauchementMedecin = $linkpdo->prepare('SELECT COUNT(*)
+                    FROM consultation
+                    WHERE idM = :idM
+                    AND date_consultation = :date_consultation
+                    AND (
+                        (:heure_debut BETWEEN heure_debut AND ADDTIME(heure_debut, duree))
+                        OR (ADDTIME(:heure_debut, :duree) BETWEEN heure_debut AND ADDTIME(heure_debut, duree))
+                        OR (heure_debut BETWEEN :heure_debut AND ADDTIME(:heure_debut, :duree))
+                        OR (ADDTIME(heure_debut, duree )BETWEEN :heure_debut AND ADDTIME(:heure_debut, :duree))
+                    )');
 
                         // Préparation de la requête de test de chevauchement de consultation pour un patient
                         $reqChevauchementPatient= $linkpdo->prepare('SELECT COUNT(*)
                         FROM consultation
                         WHERE idP = :idP
-                          AND date_consultation = :date_consultation
-                          AND (
-                              (:heure_debut BETWEEN heure_debut AND ADDTIME(heure_debut, duree))
-                              OR (ADDTIME(:heure_debut, :duree) BETWEEN heure_debut AND ADDTIME(heure_debut, duree))
-                              OR (heure_debut BETWEEN :heure_debut AND ADDTIME(:heure_debut, :duree))
-                              OR (ADDTIME(heure_debut, duree )BETWEEN :heure_debut AND ADDTIME(:heure_debut, :duree))
-                          )');
+                        AND date_consultation = :date_consultation
+                        AND (
+                            (:heure_debut BETWEEN heure_debut AND ADDTIME(heure_debut, duree))
+                            OR (ADDTIME(:heure_debut, :duree) BETWEEN heure_debut AND ADDTIME(heure_debut, duree))
+                            OR (heure_debut BETWEEN :heure_debut AND ADDTIME(:heure_debut, :duree))
+                            OR (ADDTIME(heure_debut, duree )BETWEEN :heure_debut AND ADDTIME(:heure_debut, :duree))
+                        )');
 
                     
 
@@ -133,7 +131,7 @@
                             $reqChevauchementPatient->bindParam(':idP', $_POST['idP'], PDO::PARAM_STR);
 
                             // Exécution de la requête
-                             $reqChevauchementMedecin->execute();
+                            $reqChevauchementMedecin->execute();
 
                             // Exécution de la requête
                             $reqChevauchementPatient->execute();
@@ -171,13 +169,16 @@
                                         $reqCreateConsultation->execute();
 
                                         if ($reqCreateConsultation == false){
+                                            $msgErreur = "Erreur dans l'execution de la requête de création"
                                             $response['statusCode'] = 400;
                                             $response['statusMessage'] = "Erreur dans l'execution de la requête de création d'une consultation.";
+                                            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
                                         } else {
-
+                                            $msgErreur = "La consultation a été crée avec succès"
                                             $response['statusCode'] = 200; 
                                             $response['statusMessage'] = "La requête a réussie";
                                             $response['data'] = $date_consultation ." ". $heure_debut ." ". $duree; 
+                                            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
                                         }
                                     }
                                 }
@@ -243,8 +244,11 @@
                 $response['statusCode'] = 400;
                 $response['statusMessage'] = "Erreur lors de l'exécution de la requête : " . $errorInfo[2];
             } else {
+                $msgErreur = "La consultation a bien été modifiée" // Stockage du message dans le tableau de réponse
                 $response['statusCode'] = 200; // Status code
                 $response['statusMessage'] = "La requête a réussie, modification partielle effectuée";
+                $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+
             }
     
         }
@@ -264,22 +268,52 @@
 
         } else{
 
-            $reqDeleteConsultation->binParam(':idC', $id, PDO::PARAM_STR);
+            $reqDeleteConsultation->bindParam(':idC', $id, PDO::PARAM_STR);
 
             $reqDeleteConsultation->execute();
 
             if($reqDeleteConsultation == false){
+                $msgErreur = "Erreur dans l'exécution de la requête de suppression : ";
                 $response['statusCode'] = 400;
                 $response['statusMessage'] = "Erreur dans l'execution de la requête de suppression d'une consultation";
+                $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
             } else {
                 
                 $data = $reqDeleteConsultation->fetchAll(PDO::FETCH_ASSOC);
 
+                $msgErreur = "La consultation a été supprimée avec succès !";
                 $response['statusCode'] = 200; 
                 $response['statusMessage'] = "La requête a réussie, suppression effectuée";
+                $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+
             }
         }
         return $response;
     }
+
+    /// Envoi de la réponse au Client
+function deliver_response($status_code, $status_message, $data=null) {
+
+    /// Paramétrage de l'entête HTTP
+    http_response_code($status_code); //Utilise un message standardisé en fonction du code HTTP
+
+    // Ajout de l'entête Access-Control-Allow-Origin pour autoriser toutes les origines
+    header("Access-Control-Allow-Origin: *");
+
+    //header("HTTP/1.1 $status_code $status_message"); //Permet de personnaliser le message associé au code HTTP
+    header("Content-Type:application/json; charset=utf-8");//Indique au client le format de la réponse
+
+    $response['status_code'] = $status_code;
+    $response['status_message'] = $status_message;
+    $response['data'] = $data;
+
+    /// Mapping de la réponse au format JSON
+    $json_response = json_encode($response);
+    if($json_response===false)
+    die('json encode ERROR : '.json_last_error_msg());
+
+    /// Affichage de la réponse (Retourné au client)
+    echo $json_response;
+}
 
 ?>
