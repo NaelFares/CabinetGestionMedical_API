@@ -129,6 +129,8 @@ function patchMedecin($linkpdo, $id, $civilite=null, $nom=null, $prenom=null) {
 
     $response = array(); // Initialisation du tableau de réponse
 
+    $msgErreur = ""; // Déclaration de la variable de message d'erreur
+
     $reqRecupMedecin = $linkpdo->prepare('SELECT * FROM medecin where idM = :idM');
 
     if ($reqRecupMedecin == false) {
@@ -172,15 +174,16 @@ function patchMedecin($linkpdo, $id, $civilite=null, $nom=null, $prenom=null) {
 
         $reqPatchUnMedecin->execute();
 
-        $errorInfo = $reqPatchUnMedecin->errorInfo();
-
-        if ($errorInfo[0] != '00000') {
-            echo "Erreur dans l'execution de la requête de modification d'un medecin.";
+        if ($reqPatchUnMedecin == false ) {
+            $msgErreur = "Erreur dans l'execution de la requête de modification d'un médecin";
             $response['statusCode'] = 400;
-            $response['statusMessage'] = "Erreur lors de l'exécution de la requête : " . $errorInfo[2];
+            $response['statusMessage'] = "Erreur lors de l'exécution de la requête : ";
+            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
         } else {
+            $msgErreur = "La requête a réussi, Le médecin a été modifié avec succès !";
             $response['statusCode'] = 200; // Status code
             $response['statusMessage'] = "La requête a réussie, modification partielle effectuée";
+            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
         }
 
     }
