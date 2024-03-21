@@ -81,5 +81,16 @@ switch ($http_method){
         
     break;
 
+    case "OPTIONS" :
+
+        // Ajoutez les en-têtes CORS pour indiquer les méthodes HTTP autorisées
+        header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
+        // Ajoutez les en-têtes CORS pour indiquer les en-têtes autorisés
+        header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
+        deliver_response("204", "Autorisation de la méthode option et des requêtes CORS");
+        
+    break;
+
 }
 ?>
