@@ -55,7 +55,7 @@ switch ($http_method){
             //Traitement des données
 
             //Appel de la fonction de modification partielle d’une phrase
-            $matchingData=patchPatient($linkpdo, $id, /*civilité*/ null, /*nom*/ null, /*prenom*/ $data['prenom'], /*addr*/ $data['adresse'], /*ville*/ $data['ville'], /*cp*/ $data['code_postal'], /*date_naissance*/ null, /*lieu_naissance*/ null, /*num secu sociale*/ null, /*idM*/ null );
+            $matchingData=patchPatient($linkpdo, $id, /*civilité*/ null, /*nom*/ null, /*prenom*/ $data['prenom'], /*sexe*/ null,  /*addr*/ $data['adresse'], /*ville*/ $data['ville'], /*cp*/ $data['code_postal'], /*date_naissance*/ null, /*lieu_naissance*/ null, /*num secu sociale*/ null, /*idM*/ null );
 
             deliver_response($matchingData["statusCode"], $matchingData["statusMessage"]);
         }

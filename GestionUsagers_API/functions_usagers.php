@@ -8,7 +8,7 @@ function getAllPatients($linkpdo) {
     $reqGetAllPatients = $linkpdo->prepare('SELECT idP, civilite, nom, prenom, adresse, ville, cp, date_naissance, lieu_naissance, num_secu_sociale, idM FROM patient');
 
         if ($reqGetAllPatients == false) {
-            die "Erreur dans la préparation de la requête d'affichage.";
+            echo "Erreur dans la préparation de la requête d'affichage.";
         } else {
             $reqGetAllPatients->execute();
 
@@ -34,7 +34,7 @@ function getPatientsById($linkpdo, $idP) {
     $reqgetPatientsById = $linkpdo->prepare('SELECT idP, civilite, nom, prenom, adresse, ville, cp, date_naissance, lieu_naissance, num_secu_sociale, idM FROM patient WHERE idP = :idP');
 
     if ($reqgetPatientsById == false) {
-        die "Erreur dans la préparation de la requête d'affichage d'une seule phrase.";
+        echo "Erreur dans la préparation de la requête d'affichage d'une seule phrase.";
     } else {
 
         $reqgetPatientsById->bindParam(':idP', $idP, PDO::PARAM_STR); 
@@ -58,7 +58,7 @@ function getPatientsById($linkpdo, $idP) {
 }
 
 /// Ajouter une phrase
-function createPatient($linkpdo, $civilite, $nom, $prenom, $adresse, $ville, $cp, $date_naissance, $lieu_naissance, $num_secu_sociale, $idM) {
+function createPatient($linkpdo, $civilite, $nom, $prenom, $sexe,  $adresse, $ville, $cp, $date_naissance, $lieu_naissance, $num_secu_sociale, $idM) {
 
     $response = array(); // Initialisation du tableau de réponse
 
@@ -100,7 +100,7 @@ function createPatient($linkpdo, $civilite, $nom, $prenom, $adresse, $ville, $cp
                 $response['data'] = $msgErreur; // Stockage de la phrase dans le tableau de réponse
             } else {
                 // Préparation de la requête d'insertion
-                $req = $linkpdo->prepare('INSERT INTO patient(civilite, nom, prenom, adresse, ville, cp, date_naissance, lieu_naissance, num_secu_sociale, idM) VALUES(:civilite, :nom, :prenom, :adresse, :ville, :cp, :date_naissance, :lieu_naissance, :num_secu_sociale, :idM)');
+                $req = $linkpdo->prepare('INSERT INTO patient(civilite, nom, prenom, sexe, adresse, ville, cp, date_naissance, lieu_naissance, num_secu_sociale, idM) VALUES(:civilite, :nom, :prenom, :sexe, :adresse, :ville, :cp, :date_naissance, :lieu_naissance, :num_secu_sociale, :idM)');
 
                 // Vérification du fonctionnement de la requete d'insertion
                 if($req == false) {
@@ -111,6 +111,7 @@ function createPatient($linkpdo, $civilite, $nom, $prenom, $adresse, $ville, $cp
                 $req->bindParam(':civilite', $civilite, PDO::PARAM_STR);
                 $req->bindParam(':nom', $nom, PDO::PARAM_STR);
                 $req->bindParam(':prenom', $prenom, PDO::PARAM_STR);
+                $req->bindParam(':sexe', $sexe, PDO::PARAM_STR);
                 $req->bindParam(':adresse', $adresse, PDO::PARAM_STR);
                 $req->bindParam(':ville', $ville, PDO::PARAM_STR);
                 $req->bindParam(':cp', $cp, PDO::PARAM_STR);
@@ -139,8 +140,8 @@ function createPatient($linkpdo, $civilite, $nom, $prenom, $adresse, $ville, $cp
 
                     } else {
                         $msgErreur = "Le patient a été ajouté avec succès !";
-                        $response['statusCode'] = 200; // Status code
-                        $response['statusMessage'] = "La requête a réussi";
+                        $response['statusCode'] = 201; // Status code
+                        $response['statusMessage'] = "La requête a réussi et une nouvelle ressource a été créée";
                         $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
                     }
                 
@@ -152,7 +153,7 @@ function createPatient($linkpdo, $civilite, $nom, $prenom, $adresse, $ville, $cp
 }
 
 // Modifier partiellement un objet 
-function patchPatient($linkpdo, $id, $civilite=null, $nom=null, $prenom=null, $adresse=null, $ville=null, $cp=null, $date_naissance=null, $lieu_naissance=null, $num_secu_sociale=null, $idM=null ) {
+function patchPatient($linkpdo, $id, $civilite=null, $nom=null, $prenom=null, $sexe=null, $adresse=null, $ville=null, $cp=null, $date_naissance=null, $lieu_naissance=null, $num_secu_sociale=null, $idM=null ) {
 
     $response = array(); // Initialisation du tableau de réponse
 
@@ -171,7 +172,7 @@ function patchPatient($linkpdo, $id, $civilite=null, $nom=null, $prenom=null, $a
 
      // Préparation de la requête d'insertion
     // La prochaine fois utiliser + de paramètres dans le where pour éviter de modifier les infos d'un homonyme 
-    $reqModification = $linkpdo->prepare('UPDATE patient SET civilite = :nouvelleCivilite, nom = :nouveauNom, prenom = :nouveauPrenom, adresse = :nouvelleAdresse, ville = :nouvelleVille, cp = :nouveauCp, date_naissance = :nouvelleDate_naissance, lieu_naissance = :nouveauLieu_naissance, num_secu_sociale = :nouveauNum_secu_sociale, idM = :nouveauIdM WHERE idP = :idP');
+    $reqModification = $linkpdo->prepare('UPDATE patient SET civilite = :nouvelleCivilite, nom = :nouveauNom, prenom = :nouveauPrenom, sexe = :nouveauSexe, adresse = :nouvelleAdresse, ville = :nouvelleVille, cp = :nouveauCp, date_naissance = :nouvelleDate_naissance, lieu_naissance = :nouveauLieu_naissance, num_secu_sociale = :nouveauNum_secu_sociale, idM = :nouveauIdM WHERE idP = :idP');
 
     if ($reqModification === false) {
         echo "Erreur de préparation de la requête.";
@@ -193,6 +194,12 @@ function patchPatient($linkpdo, $id, $civilite=null, $nom=null, $prenom=null, $a
             $reqModification->bindParam(':nouveauPrenom', $valeurObjetCourant['prenom'], PDO::PARAM_STR); 
         } else {
             $reqModification->bindParam(':nouveauPrenom', $prenom, PDO::PARAM_STR); 
+        }
+
+        if($sexe == null) {
+            $reqModification->bindParam(':nouveauSexe', $valeurObjetCourant['sexe'], PDO::PARAM_STR); 
+        } else {
+            $reqModification->bindParam(':nouveauSexe', $sexe, PDO::PARAM_STR); 
         }
 
         if($adresse == null) {
