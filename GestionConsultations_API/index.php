@@ -59,7 +59,7 @@ switch ($http_method){
             //Traitement des données
             
             //Appel de la fonction de modification partielle d’une consultation
-            $matchingData=patchConsultation($linkpdo, $id , $data['idM'], null, $data['date_consultation'], $data['heure_debut'], null);
+            $matchingData=patchConsultation($linkpdo, $id , $data['id_medecin'], null, $data['date_consult'], $data['heure_consult'], null);
 
             deliver_response($matchingData["statusCode"], $matchingData["statusMessage"]);
         }

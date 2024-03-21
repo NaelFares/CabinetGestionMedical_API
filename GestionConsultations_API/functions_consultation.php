@@ -194,78 +194,111 @@
     function patchConsultation($linkpdo, $id, $idM=null, $idP=null, $date_consultation=null, $heure_debut=null, $duree=null) {
         $response = array();
 
-        $reqRecupConsultation = $linkpdo->prepare('SELECT * FROM consultation where idC = :idC');
+        $reqExisteDeja = $linkpdo->prepare('SELECT COUNT(*) FROM consultation WHERE date_consultation = :date_consultation AND heure_debut = :heure_debut AND duree = :duree AND idP = :idP AND idM = :idM');
 
-        if ($reqRecupConsultation == false) {
-            $response['statusCode'] = 500;
-            $response['statusMessage'] = "Erreur dans la préparation de la requête de récuperation d'une consultation: ";
-            return $response;
-        } else { 
-            $reqRecupConsultation->bindParam(':idC', $id, PDO::PARAM_STR); 
-            $reqRecupConsultation->execute();
-        }
-    
-        $valeurObjetCourant = $reqRecupConsultation->fetch();
-    
-        $reqPatchUneConsultation = $linkpdo->prepare('UPDATE consultation SET idM = :idM, idP = :idP, date_consultation = :date_consultation, heure_debut = :heure_debut, duree = :duree WHERE idC = :idC');
-    
-        if ($reqPatchUneConsultation == false) {
-            $response['statusCode'] = 500;
-            $response['statusMessage'] = "Erreur dans la préparation de la requête de modification partielle d'une consultation: ";
-            return $response;
+         //Test de la requete de présence d'une consultation => die si erreur
+        if($reqExisteDeja == false) {
+            die("Erreur de préparation de la requête de test de présence d'une consultation.");
         } else {
-
-            if($idM == null) {
-                $reqPatchUneConsultation->bindParam(':idM', $valeurObjetCourant['idM'], PDO::PARAM_STR); 
-            } else {
-                $reqPatchUneConsultation->bindParam(':idM', $idM, PDO::PARAM_STR); 
-            }
-
-            if($idP == null) {
-                $reqPatchUneConsultation->bindParam(':idP', $valeurObjetCourant['idP'], PDO::PARAM_STR); 
-            } else {
-                $reqPatchUneConsultation->bindParam(':idP', $idP, PDO::PARAM_STR); 
-            }
-
-            if($date_consultation == null) {
-                $reqPatchUneConsultation->bindParam(':date_consultation', $valeurObjetCourant['date_consultation'], PDO::PARAM_STR); 
-            } else {
-                $reqPatchUneConsultation->bindParam(':date_consultation', $date_consultation, PDO::PARAM_STR); 
-            }
-    
-            if($heure_debut == null) {
-                $reqPatchUneConsultation->bindParam(':heure_debut', $valeurObjetCourant['heure_debut'], PDO::PARAM_STR); 
-            } else {
-                $reqPatchUneConsultation->bindParam(':heure_debut', $heure_debut, PDO::PARAM_STR); 
-            }
             
-            if($duree == null) {
-                $reqPatchUneConsultation->bindParam(':duree', $valeurObjetCourant['duree'], PDO::PARAM_STR); 
-            } else {
-                $reqPatchUneConsultation->bindParam(':duree', $duree, PDO::PARAM_STR); 
-            }
-    
-            $reqPatchUneConsultation->bindParam(':idC', $id, PDO::PARAM_STR); 
-    
-            $reqPatchUneConsultation->execute();
-    
-            $errorInfo = $reqPatchUneConsultation->errorInfo();
-    
-            if ($errorInfo[0] != '00000') {
-                echo "Erreur dans l'execution de la requête de modification d'un medecin.";
-                $response['statusCode'] = 400;
-                $response['statusMessage'] = "Erreur lors de l'exécution de la requête : " . $errorInfo[2];
-            } else {
-                $msgErreur = "La consultation a bien été modifiée"; // Stockage du message dans le tableau de réponse
-                $response['statusCode'] = 200; // Status code
-                $response['statusMessage'] = "La requête a réussie, modification partielle effectuée";
-                $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+            // Liaison des paramètres
+            $reqExisteDeja->bindParam(':date_consultation', $date_consultation, PDO::PARAM_STR);
+            $reqExisteDeja->bindParam(':heure_debut', $heure_debut, PDO::PARAM_STR);
+            $reqExisteDeja->bindParam(':duree', $duree, PDO::PARAM_STR);
+            $reqExisteDeja->bindParam(':idP', $idP, PDO::PARAM_STR);
+            $reqExisteDeja->bindParam(':idM', $idM, PDO::PARAM_STR);
 
-            }
-    
+            // Exécution de la requête
+            $reqExisteDeja->execute();
+
+            //Vérification de la bonne exécution de la requete ExisteDéja
+                    //Si non on arrete et on affiche une erreur
+                    //Si oui on execute la requete
+                    if($reqExisteDeja == false) {
+                        die("Erreur dans l'exécution de la requête de test de présence d'une consultation.");
+                    } else {
+
+                        // Récupération du résultat
+                        $nbConsultations = $reqExisteDeja->fetchColumn();
+
+                        // Vérification si le patient existe déjà
+                        if ($nbConsultations > 0) {
+                            $msgErreur = "Cette consultation est déjà enregistrée.";
+                        } else {
+                                $reqRecupConsultation = $linkpdo->prepare('SELECT * FROM consultation where idC = :idC');
+
+                                if ($reqRecupConsultation == false) {
+                                    $response['statusCode'] = 500;
+                                    $response['statusMessage'] = "Erreur dans la préparation de la requête de récuperation d'une consultation: ";
+                                    return $response;
+                                } else { 
+                                    $reqRecupConsultation->bindParam(':idC', $id, PDO::PARAM_STR); 
+                                    $reqRecupConsultation->execute();
+                                }
+                            
+                                $valeurObjetCourant = $reqRecupConsultation->fetch();
+                            
+                                $reqPatchUneConsultation = $linkpdo->prepare('UPDATE consultation SET idM = :idM, idP = :idP, date_consultation = :date_consultation, heure_debut = :heure_debut, duree = :duree WHERE idC = :idC');
+                            
+                                if ($reqPatchUneConsultation == false) {
+                                    $response['statusCode'] = 500;
+                                    $response['statusMessage'] = "Erreur dans la préparation de la requête de modification partielle d'une consultation: ";
+                                    return $response;
+                                } else {
+
+                                    if($idM == null) {
+                                        $reqPatchUneConsultation->bindParam(':idM', $valeurObjetCourant['idM'], PDO::PARAM_STR); 
+                                    } else {
+                                        $reqPatchUneConsultation->bindParam(':idM', $idM, PDO::PARAM_STR); 
+                                    }
+
+                                    if($idP == null) {
+                                        $reqPatchUneConsultation->bindParam(':idP', $valeurObjetCourant['idP'], PDO::PARAM_STR); 
+                                    } else {
+                                        $reqPatchUneConsultation->bindParam(':idP', $idP, PDO::PARAM_STR); 
+                                    }
+
+                                    if($date_consultation == null) {
+                                        $reqPatchUneConsultation->bindParam(':date_consultation', $valeurObjetCourant['date_consultation'], PDO::PARAM_STR); 
+                                    } else {
+                                        $reqPatchUneConsultation->bindParam(':date_consultation', $date_consultation, PDO::PARAM_STR); 
+                                    }
+                            
+                                    if($heure_debut == null) {
+                                        $reqPatchUneConsultation->bindParam(':heure_debut', $valeurObjetCourant['heure_debut'], PDO::PARAM_STR); 
+                                    } else {
+                                        $reqPatchUneConsultation->bindParam(':heure_debut', $heure_debut, PDO::PARAM_STR); 
+                                    }
+                                    
+                                    if($duree == null) {
+                                        $reqPatchUneConsultation->bindParam(':duree', $valeurObjetCourant['duree'], PDO::PARAM_STR); 
+                                    } else {
+                                        $reqPatchUneConsultation->bindParam(':duree', $duree, PDO::PARAM_STR); 
+                                    }
+                            
+                                    $reqPatchUneConsultation->bindParam(':idC', $id, PDO::PARAM_STR); 
+                            
+                                    $reqPatchUneConsultation->execute();
+                            
+                                    $errorInfo = $reqPatchUneConsultation->errorInfo();
+                            
+                                    if ($errorInfo[0] != '00000') {
+                                        echo "Erreur dans l'execution de la requête de modification d'un medecin.";
+                                        $response['statusCode'] = 400;
+                                        $response['statusMessage'] = "Erreur lors de l'exécution de la requête : " . $errorInfo[2];
+                                    } else {
+                                        $msgErreur = "La consultation a bien été modifiée"; // Stockage du message dans le tableau de réponse
+                                        $response['statusCode'] = 200; // Status code
+                                        $response['statusMessage'] = "La requête a réussie, modification partielle effectuée";
+                                        $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+
+                                    }
+                            
+                                }
+                        }
+                    }
         }
-    
-        return $response; // Retour du tableau de réponse
+            return $response; // Retour du tableau de réponse
     }
 
 
