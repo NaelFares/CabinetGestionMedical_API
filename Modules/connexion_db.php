@@ -4,6 +4,7 @@ $server = "localhost";
 $db = "cabinetmedicalapi_bd_app";
 $login = "root";
 
+
 // Connexion au serveur MySQL always data
 try {
     $linkpdo = new PDO("mysql:host=$server;dbname=$db", $login);
