@@ -1,0 +1,23 @@
+Options +FollowSymlinks
+RewriteEngine On
+
+
+# AUTHENTIFICATION
+RewriteRule ^auth$ auth_API/authapi.php
+
+
+# MEDECINS
+RewriteRule ^medecins$ GestionMedecins_API/api.php
+RewriteRule ^medecins/([0-9]+)$ GestionMedecins_API/api.php?id=$1
+
+# USAGERS
+RewriteRule ^usagers$ GestionUsagers_API/api.php
+RewriteRule ^usagers/([0-9]+)$ GestionUsagers_API/api.php?id=$1
+
+# CONSULTATIONS
+RewriteRule ^consultations$ GestionConsultations_API/api.php
+RewriteRule ^consultations/([0-9]+)$ GestionConsultations_API/api.php?id=$1
+
+# STATISTIQUES
+RewriteRule ^stats/medecins$ GestionStat_API/api.php?stat=medecins
+RewriteRule ^stats/usagers$ GestionStat_API/api.php?stat=usagers
