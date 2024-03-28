@@ -5,19 +5,18 @@ RewriteEngine On
 # AUTHENTIFICATION
 RewriteRule ^auth$ auth_API/authapi.php
 
-
 # MEDECINS
-RewriteRule ^medecins$ GestionMedecins_API/api.php
-RewriteRule ^medecins/([0-9]+)$ GestionMedecins_API/api.php?id=$1
+RewriteRule ^medecins$ app_API/GestionMedecins_API/api.php
+RewriteRule ^medecins/([0-9]+)$ app_API/GestionMedecins_API/api.php?id=$1
 
 # USAGERS
-RewriteRule ^usagers$ GestionUsagers_API/api.php
-RewriteRule ^usagers/([0-9]+)$ GestionUsagers_API/api.php?id=$1
+RewriteRule ^usagers$ app_API/GestionUsagers_API/api.php
+RewriteRule ^usagers/([0-9]+)$ app_API/GestionUsagers_API/api.php?id=$1
 
 # CONSULTATIONS
-RewriteRule ^consultations$ GestionConsultations_API/api.php
-RewriteRule ^consultations/([0-9]+)$ GestionConsultations_API/api.php?id=$1
+RewriteRule ^consultations$ app_API/GestionConsultations_API/api.php
+RewriteRule ^consultations/([0-9]+)$ app_API/GestionConsultations_API/api.php?id=$1
 
 # STATISTIQUES
-RewriteRule ^stats/medecins$ GestionStat_API/api.php?stat=medecins
-RewriteRule ^stats/usagers$ GestionStat_API/api.php?stat=usagers
+RewriteRule ^stats/medecins$ app_API/GestionStat_API/api.php?stat=medecins
+RewriteRule ^stats/usagers$ app_API/GestionStat_API/api.php?stat=usagers
