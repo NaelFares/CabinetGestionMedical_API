@@ -3,12 +3,12 @@
 $server = "localhost";
 $db = "cabinetmedicalapi_bd_app";
 $login = "root";
-$mdp = "qvk1hXX_THrRfD*Q";
+
 
 
 // Connexion au serveur MySQL always data
 try {
-    $linkpdo = new PDO("mysql:host=$server;dbname=$db", $login, $mdp);
+    $linkpdo = new PDO("mysql:host=$server;dbname=$db", $login);
 } catch (Exception $e) {
     die('Erreur : ' . $e->getMessage());
 }

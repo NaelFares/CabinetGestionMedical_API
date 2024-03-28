@@ -23,7 +23,7 @@ switch ($http_method){
 
             deliver_response("200", "Succés, création du jeton",  $jwt);
         } else {
-            deliver_response("401", "Identifiant ou mot de passe invalide");
+            deliver_response("401", "Identifiant ou mot de passe invalide", null);
         }
     
     break;
