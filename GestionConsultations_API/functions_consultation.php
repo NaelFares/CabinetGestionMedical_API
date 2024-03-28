@@ -50,7 +50,6 @@
                 $response['statusCode'] = 200;
                 $response['statusMessage'] = "La requête a réussi";
                 $response['data'] = $data;
-
             }
         }
         return $response;
@@ -287,7 +286,7 @@
                             
                                     if ($errorInfo[0] != '00000') {
                                         $response['statusCode'] = 400;
-                                        $response['statusMessage'] = "Syntaxe de la requête non conforme"
+                                        $response['statusMessage'] = "Syntaxe de la requête non conforme";
                                     } else {
                                         $msgErreur = "La consultation a bien été modifiée"; // Stockage du message dans le tableau de réponse
                                         $response['statusCode'] = 200; // Status code

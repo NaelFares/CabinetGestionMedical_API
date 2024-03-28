@@ -10,6 +10,9 @@ function getAllMedecins($linkpdo) {
     if ($reqAllMedecin == false) {
         $response['statusCode'] = 400;
         $response['statusMessage'] = "Syntaxe de la requête non conforme";
+    } else {
+        $reqAllMedecin->execute();
+
         if ($reqAllMedecin == false) {
             $response['statusCode'] = 400;
             $response['statusMessage'] = "Syntaxe de la requête non conforme";
@@ -22,7 +25,6 @@ function getAllMedecins($linkpdo) {
             $response['data'] = $data; // Stockage des données dans le tableau de réponse
         }
     }
-
     return $response; // Retour du tableau de réponse
 }
 
@@ -35,6 +37,7 @@ function getMedecinById($linkpdo, $id) {
     if ($reqMedecinParId == false) {
         $response['statusCode'] = 400;
         $response['statusMessage'] = "Syntaxe de la requête non conforme";
+    } else {
 
         $reqMedecinParId->bindParam(':idM', $id, PDO::PARAM_STR); 
 
@@ -191,11 +194,8 @@ function patchMedecin($linkpdo, $id, $civilite=null, $nom=null, $prenom=null) {
 
 
 /// supprimer un medecin
-function deleteMedecin($linkpdo, $id) {
-
-    $response = array(); // Initialisation du tableau de réponse
-
-    // Préparation de la requête de test de présence d'une consultation pour ce medecin
+function deleteMedecin($linkpdo, $id){            
+            
     $reqMedConsult = $linkpdo->prepare('SELECT COUNT(*) FROM consultation WHERE idM = :idM');
 
     //Test de la requete de présence d'une consultation => die si erreur
@@ -205,115 +205,126 @@ function deleteMedecin($linkpdo, $id) {
         return $response;    
     } else {
 
-        $reqMedConsult->bindParam(':idM', $idM , PDO::PARAM_STR);
+        $reqMedConsult->bindParam(':idM', $id , PDO::PARAM_STR);
 
         // Exécution de la requête
         $reqMedConsult->execute();
 
         //Vérification de la bonne exécution de la requete ExisteDéja
-        //Si oui on arrete et on affiche une erreur
-        //Si non on execute la requete
         if($reqMedConsult == false) {
             $response['statusCode'] = 400;
             $response['statusMessage'] = "Syntaxe de la requête non conforme";
             return $response;         
         } else {
-             // Récupération du résultat
-            $nbConsultations = $reqMedConsult->fetchColumn();
+                // Récupération du résultat
+                $nbConsultations = $reqMedConsult->fetchColumn();
 
-             // Vérification si la consultation existe déjà
-            if ($nbConsultations > 0) {
+                // Vérification si la consultation existe déjà
+                if ($nbConsultations > 0) {
                 $reqDeleteConsultationDuMedecin = $linkpdo->prepare('DELETE FROM consultation WHERE idM = :idM');
 
                 if($reqDeleteConsultationDuMedecin == false) {
                     $response['statusCode'] = 400;
                     $response['statusMessage'] = "Syntaxe de la requête non conforme";
                     return $response; 
+
                 } else {
-                    $reqDeleteConsultationDuMedecin->bindParam(':idM', $idM , PDO::PARAM_STR);
+                    $reqDeleteConsultationDuMedecin->bindParam(':idM', $id , PDO::PARAM_STR);
     
                     // Exécution de la requête
                     $reqDeleteConsultationDuMedecin->execute();
                 }
             }
 
-                 // Préparation de la requête de test de présence d'un medecin referent
-                $reqReferentExiste = $linkpdo->prepare('SELECT COUNT(*) FROM patient WHERE idM = :idM');
+                    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    //////////////////////////////// Test de présence de médecin référent //////////////////////////////////
+                    ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-                //Test de la requete de présence d'un medecin referent => die si erreur
-                if($reqReferentExiste == false) {
-                    $response['statusCode'] = 400;
-                    $response['statusMessage'] = "Syntaxe de la requête non conforme";
-                    return $response;                 
-                } else {
+                     // Préparation de la requête de test de présence d'un medecin referent
+                    $reqReferentExiste = $linkpdo->prepare('SELECT COUNT(*) FROM patient WHERE idM = :idM');
 
-                    $reqReferentExiste->bindParam(':idM', $idM , PDO::PARAM_STR);
-
-                    // Exécution de la requête
-                    $reqReferentExiste->execute();
-
-                    //Vérification de la bonne exécution de la requete ExisteDéja
-                    //Si oui on arrete et on affiche une erreur
-                    //Si non on execute la requete
+                    //Test de la requete de présence d'un medecin referent => die si erreur
                     if($reqReferentExiste == false) {
                         $response['statusCode'] = 400;
                         $response['statusMessage'] = "Syntaxe de la requête non conforme";
-                        return $response;                       
-                    } else {
-                        // Récupération du résultat
-                        $nbReference = $reqReferentExiste->fetchColumn();
-
-                        // Vérification si il ya une reference
-                        if ($nbReference > 0) {
-                            // Mettre à jour les références à NULL dans la table Patient
-                            $reqUpdateReferenceMedecin = $linkpdo->prepare('UPDATE Patient SET idM = NULL WHERE idM = :idM');
-
-                            if($reqUpdateReferenceMedecin == false) {
-                                $response['statusCode'] = 400;
-                                $response['statusMessage'] = "Syntaxe de la requête non conforme";
-                                return $response;                               
-                            } else {
-                                $reqUpdateReferenceMedecin->bindParam(':idM', $idM , PDO::PARAM_STR);
-                
-                                // Exécution de la requête
-                                $reqUpdateReferenceMedecin->execute();
-                            }
-                        }
-
-                    $reqDeleteMedecin = $linkpdo->prepare('DELETE FROM medecin WHERE idM = :idM');
-
-                    if ($reqDeleteMedecin == false) {
-                        $response['statusCode'] = 400;
-                        $response['statusMessage'] = "Syntaxe de la requête non conforme";
+                        return $response;                 
                     } else {
 
-                        $reqDeleteMedecin->bindParam(':idM', $id, PDO::PARAM_STR); 
+                        $reqReferentExiste->bindParam(':idM', $id , PDO::PARAM_STR);
 
-                        $reqDeleteMedecin->execute();
+                        // Exécution de la requête
+                        $reqReferentExiste->execute();
 
-                        if ($reqDeleteMedecin == false) {
-                            $msgErreur = "Erreur dans l'exécution de la requête de suppression : ";
+                        //Vérification de la bonne exécution de la requete ExisteDéja
+                        //Si oui on arrete et on affiche une erreur
+                        //Si non on execute la requete
+                        if($reqReferentExiste == false) {
                             $response['statusCode'] = 400;
                             $response['statusMessage'] = "Syntaxe de la requête non conforme";
-                            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+                            return $response;  
+    
+                        } else {        
+                            // Récupération du résultat
+                            $nbReference = $reqReferentExiste->fetchColumn();
 
-                        } else {
-                            // On récupère toutes les phrases
-                            $data = $reqDeleteMedecin->fetchAll(PDO::FETCH_ASSOC);
+                            // Vérification si il ya une reference
+                            if ($nbReference > 0) {
+                                // Mettre à jour les références à NULL dans la table Patient
+                                $reqUpdateReferenceMedecin = $linkpdo->prepare('UPDATE Patient SET idM = NULL WHERE idM = :idM');
 
-                            $msgErreur = "Le medecin a été supprimé avec succès !";
-                            $response['statusCode'] = 200; // Status code
-                            $response['statusMessage'] = "La requête a réussi";
-                            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+                                if($reqUpdateReferenceMedecin == false) {
+                                    $response['statusCode'] = 400;
+                                    $response['statusMessage'] = "Syntaxe de la requête non conforme";
+                                    return $response; 
+    
+                                } else {
+                                    $reqUpdateReferenceMedecin->bindParam(':idM', $id , PDO::PARAM_STR);
+                    
+                                    // Exécution de la requête
+                                    $reqUpdateReferenceMedecin->execute();
+                                }
+                            }
+
+                            ////////////////////////////////////////////////////////////////////////////////////////////////////////
+                            ///////////////////////////////////// suppression du médecin ///////////////////////////////////////////
+                            ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                            // Préparation de la requête de suppression
+                            $reqDeleteMedecin = $linkpdo->prepare('DELETE FROM medecin WHERE idM = :idM');
+
+                            if ($reqDeleteMedecin == false) {
+                                $response['statusCode'] = 400;
+                                $response['statusMessage'] = "Syntaxe de la requête non conforme";
+        
+                            } else {
+                                // Liaison des paramètres
+                                $reqDeleteMedecin->bindParam(':idM', $id, PDO::PARAM_STR);
+                                
+                                // Exécution de la requête
+                                $reqDeleteMedecin->execute();
+
+                                if ($reqDeleteMedecin == false) {
+                                    $msgErreur = "Erreur dans l'exécution de la requête de suppression : ";
+                                    $response['statusCode'] = 400;
+                                    $response['statusMessage'] = "Syntaxe de la requête non conforme";
+                                    $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+        
+                                } else {
+                                    // On récupère toutes les phrases
+                                    $data = $reqDeleteMedecin->fetchAll(PDO::FETCH_ASSOC);
+        
+                                    $msgErreur = "Le medecin a été supprimé avec succès !";
+                                    $response['statusCode'] = 200; // Status code
+                                    $response['statusMessage'] = "La requête a réussi";
+                                    $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+                                }
                         }
                     }
                 }
-            }
+            }  
         }
+        return $response; // Retour du tableau de réponse
     }
-
-    return $response; // Retour du tableau de réponse
-}
 
 
 /// Envoi de la réponse au Client
