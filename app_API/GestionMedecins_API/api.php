@@ -32,26 +32,8 @@ if(demande_validation()) {
             
         break;
 
-<<<<<<< Updated upstream
-        // Récupération des données dans le corps
-        $postedData = file_get_contents('php://input');
-        $data = json_decode($postedData,true); //Reçoit du json et renvoi une adaptation exploitable en php. Le paramètre true impose un tableau en retour et non un objet.
-        //Traitement des données
-        
-        if(isset($data['civilite']) && isset($data['nom']) && isset($data['prenom'])) {
-            // Appel de la fonction de création d’un medecin
-            $matchingData = createMedecin($linkpdo, $data['civilite'], $data['nom'], $data['prenom']);
-            deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"]); // Les données de réponse sont stockées dans $matchingData, le troisième paramètre est null car il n'y a pas de données à renvoyer dans ce cas.
-        } else {
-            // Gestion de l'erreur si des données requises sont manquantes
-            deliver_response(400, "Des données requises sont manquantes", null);
-        }
-        
-    break;
-=======
         case "POST" :
->>>>>>> Stashed changes
-
+            
             // Récupération des données dans le corps
             $postedData = file_get_contents('php://input');
             $data = json_decode($postedData,true); //Reçoit du json et renvoi une adaptation exploitable en php. Le paramètre true impose un tableau en retour et non un objet.
@@ -60,11 +42,12 @@ if(demande_validation()) {
             if(isset($data['civilite']) && isset($data['nom']) && isset($data['prenom'])) {
                 // Appel de la fonction de création d’un medecin
                 $matchingData = createMedecin($linkpdo, $data['civilite'], $data['nom'], $data['prenom']);
-                deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], null); // Les données de réponse sont stockées dans $matchingData, le troisième paramètre est null car il n'y a pas de données à renvoyer dans ce cas.
+                deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"]); // Les données de réponse sont stockées dans $matchingData, le troisième paramètre est null car il n'y a pas de données à renvoyer dans ce cas.
             } else {
                 // Gestion de l'erreur si des données requises sont manquantes
                 deliver_response(400, "Des données requises sont manquantes", null);
             }
+           
             
         break;
 
