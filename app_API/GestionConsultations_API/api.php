@@ -1,96 +1,102 @@
 <?php
 
 require('../Modules/connexion_db.php');
+require('../Modules/fonctions.php');
 require('functions_consultation.php');
 
-/// Identification du type de méthode HTTP envoyée par le client
-$http_method = $_SERVER['REQUEST_METHOD'];
+if(demande_validation()) {
 
-switch ($http_method){
+    /// Identification du type de méthode HTTP envoyée par le client
+    $http_method = $_SERVER['REQUEST_METHOD'];
 
-    case "GET" :
+    switch ($http_method){
 
-        //Récupération des données dans l’URL si on veut avec l'id
-        if(isset($_GET['id']) == true) {
-            $id=htmlspecialchars($_GET['id']);
-            //Traitement des données
+        case "GET" :
 
-            //Appel de la fonction d'affichage d'une consultation
-            $matchingData=getConsultationById($linkpdo, $id);
+            //Récupération des données dans l’URL si on veut avec l'id
+            if(isset($_GET['id']) == true) {
+                $id=htmlspecialchars($_GET['id']);
+                //Traitement des données
 
-            deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"]);
+                //Appel de la fonction d'affichage d'une consultation
+                $matchingData=getConsultationById($linkpdo, $id);
 
-        } else {
-            //Appel de la fonction de lecture de toutes les consultations
-            $matchingData=getAllConsultations($linkpdo);
+                deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"]);
 
-            deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"]);
-        }
-        
-    break;
+            } else {
+                //Appel de la fonction de lecture de toutes les consultations
+                $matchingData=getAllConsultations($linkpdo);
 
-    case "POST" :
+                deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"]);
+            }
+            
+        break;
 
-        // Récupération des données dans le corps
-        $postedData = file_get_contents('php://input');
-        $data = json_decode($postedData,true); //Reçoit du json et renvoi une adaptation exploitable en php. Le paramètre true impose un tableau en retour et non un objet.
-        //Traitement des données
-        
-        if(isset($data['date_consultation']) && isset($data['heure_debut']) && isset($data['duree'])) {
-            // Appel de la fonction de création d’une consultation
-            $matchingData = createConsultation($linkpdo, $data['date_consultation'], $data['heure_debut'], $data['duree']);
-            deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], null); // Les données de réponse sont stockées dans $matchingData, le troisième paramètre est null car il n'y a pas de données à renvoyer dans ce cas.
-        } else {
-            // Gestion de l'erreur si des données requises sont manquantes
-            deliver_response(400, "Des données requises sont manquantes", null);
-        }
-        
-    break;
+        case "POST" :
 
-    case "PATCH" :
-
-        if(isset($_GET['id']) == true) {
-            $id=htmlspecialchars($_GET['id']);
-            //Traitement des données
-
-            //Récupération des données dans le corps
+            // Récupération des données dans le corps
             $postedData = file_get_contents('php://input');
             $data = json_decode($postedData,true); //Reçoit du json et renvoi une adaptation exploitable en php. Le paramètre true impose un tableau en retour et non un objet.
             //Traitement des données
             
-            //Appel de la fonction de modification partielle d’une consultation
-            $matchingData=patchConsultation($linkpdo, $id , $data['id_medecin'], $data['id_usager'], $data['date_consult'], $data['heure_consult'], $data['duree_consult']);
+            if(isset($data['date_consultation']) && isset($data['heure_debut']) && isset($data['duree'])) {
+                // Appel de la fonction de création d’une consultation
+                $matchingData = createConsultation($linkpdo, $data['date_consultation'], $data['heure_debut'], $data['duree']);
+                deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], null); // Les données de réponse sont stockées dans $matchingData, le troisième paramètre est null car il n'y a pas de données à renvoyer dans ce cas.
+            } else {
+                // Gestion de l'erreur si des données requises sont manquantes
+                deliver_response(400, "Des données requises sont manquantes", null);
+            }
+            
+        break;
 
-            deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"] );
-        }
+        case "PATCH" :
 
-    break;
+            if(isset($_GET['id']) == true) {
+                $id=htmlspecialchars($_GET['id']);
+                //Traitement des données
 
-    case "DELETE" :
+                //Récupération des données dans le corps
+                $postedData = file_get_contents('php://input');
+                $data = json_decode($postedData,true); //Reçoit du json et renvoi une adaptation exploitable en php. Le paramètre true impose un tableau en retour et non un objet.
+                //Traitement des données
+                
+                //Appel de la fonction de modification partielle d’une consultation
+                $matchingData=patchConsultation($linkpdo, $id , $data['id_medecin'], $data['id_usager'], $data['date_consult'], $data['heure_consult'], $data['duree_consult']);
 
-        //Récupération des données dans l’URL si on veut avec l'id
-        if(isset($_GET['id']) == true) {
-            $id=htmlspecialchars($_GET['id']);
-            //Traitement des données
+                deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"] );
+            }
 
-            //Appel de la fonction de suppression d'une consultation
-            $matchingData=deleteConsultation($linkpdo, $id);
+        break;
 
-            deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"]);
-        }
-        
-    break;
+        case "DELETE" :
 
-    case "OPTIONS" :
+            //Récupération des données dans l’URL si on veut avec l'id
+            if(isset($_GET['id']) == true) {
+                $id=htmlspecialchars($_GET['id']);
+                //Traitement des données
 
-        // Ajoutez les en-têtes CORS pour indiquer les méthodes HTTP autorisées
-        header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
-        // Ajoutez les en-têtes CORS pour indiquer les en-têtes autorisés
-        header('Access-Control-Allow-Headers: Content-Type, Authorization');
+                //Appel de la fonction de suppression d'une consultation
+                $matchingData=deleteConsultation($linkpdo, $id);
 
-        deliver_response("204", "Autorisation de la méthode option et des requêtes CORS");
-        
-    break;
+                deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"]);
+            }
+            
+        break;
+
+        case "OPTIONS" :
+
+            // Ajoutez les en-têtes CORS pour indiquer les méthodes HTTP autorisées
+            header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
+            // Ajoutez les en-têtes CORS pour indiquer les en-têtes autorisés
+            header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
+            deliver_response("204", "Autorisation de la méthode option et des requêtes CORS");
+            
+        break;
+
+    }
 
 }
+
 ?>
