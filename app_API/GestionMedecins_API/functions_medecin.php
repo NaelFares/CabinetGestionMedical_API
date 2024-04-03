@@ -108,6 +108,7 @@ function createMedecin($linkpdo, $civilite, $nom, $prenom) {
                         $reqCreateMedecin->bindParam(':prenom', $prenom, PDO::PARAM_STR); 
 
                         $reqCreateMedecin->execute();
+                        $data = $reqCreateMedecin-> fetchAll(PDO::FETCH_ASSOC);
 
                         if ($reqCreateMedecin == false) {
                             $msgErreur = "Erreur d'exécution de la requête";
@@ -118,7 +119,7 @@ function createMedecin($linkpdo, $civilite, $nom, $prenom) {
                             $msgErreur = "Le medecin a été ajouté avec succès !";
                             $response['statusCode'] = 201; // Status code
                             $response['statusMessage'] = "La requête a réussi et une nouvelle ressource a été créée";
-                            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+                            $response['data'] = $data; // Stockage du message dans le tableau de réponse
                         }
                     }
                 }
