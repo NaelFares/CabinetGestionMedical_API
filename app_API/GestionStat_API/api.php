@@ -1,7 +1,10 @@
 <?php 
 
-    require('../Modules/connexion_db.php');
-    require('functions_stats.php');
+require('../Modules/connexion_db.php');
+require('../Modules/fonctions.php');
+require('functions_stats.php');
+
+if(demande_validation()) {
     
     $http_method = $_SERVER['REQUEST_METHOD'];
     if ($http_method !== "GET"){
@@ -46,4 +49,7 @@
         default:
             deliver_response(400, "La statistique '".$stat."' n'existe pas.", true);
     }    
+
+}
+
 ?>

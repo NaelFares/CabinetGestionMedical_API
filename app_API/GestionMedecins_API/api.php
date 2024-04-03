@@ -1,36 +1,38 @@
 <?php
 
 require('../Modules/connexion_db.php');
+require('../Modules/fonctions.php');
 require('functions_medecin.php');
 
-/// Identification du type de méthode HTTP envoyée par le client
-$http_method = $_SERVER['REQUEST_METHOD'];
+if(demande_validation()) {
 
-switch ($http_method){
+    /// Identification du type de méthode HTTP envoyée par le client
+    $http_method = $_SERVER['REQUEST_METHOD'];
 
-    case "GET" :
+    switch ($http_method){
 
-        //Récupération des données dans l’URL si on veut avec l'id
-        if(isset($_GET['id']) == true) {
-            $id=htmlspecialchars($_GET['id']);
-            //Traitement des données
+        case "GET" :
 
-            //Appel de la fonction de lecture d'une phrase
-            $matchingData=getMedecinById($linkpdo, $id);
+            //Récupération des données dans l’URL si on veut avec l'id
+            if(isset($_GET['id']) == true) {
+                $id=htmlspecialchars($_GET['id']);
+                //Traitement des données
 
-            deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"]);
+                //Appel de la fonction de lecture d'une phrase
+                $matchingData=getMedecinById($linkpdo, $id);
 
-        } else {
-            //Appel de la fonction de lecture des phrases
-            $matchingData=getAllMedecins($linkpdo);
+                deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"]);
 
-            deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"]);
-        }
-        
-    break;
+            } else {
+                //Appel de la fonction de lecture des phrases
+                $matchingData=getAllMedecins($linkpdo);
 
-    case "POST" :
+                deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], $matchingData["data"]);
+            }
+            
+        break;
 
+<<<<<<< Updated upstream
         // Récupération des données dans le corps
         $postedData = file_get_contents('php://input');
         $data = json_decode($postedData,true); //Reçoit du json et renvoi une adaptation exploitable en php. Le paramètre true impose un tableau en retour et non un objet.
@@ -46,51 +48,73 @@ switch ($http_method){
         }
         
     break;
+=======
+        case "POST" :
+>>>>>>> Stashed changes
 
-    case "PATCH" :
-
-        if(isset($_GET['id']) == true) {
-            $id=htmlspecialchars($_GET['id']);
-            //Traitement des données
-
-            //Récupération des données dans le corps
+            // Récupération des données dans le corps
             $postedData = file_get_contents('php://input');
             $data = json_decode($postedData,true); //Reçoit du json et renvoi une adaptation exploitable en php. Le paramètre true impose un tableau en retour et non un objet.
             //Traitement des données
             
-            //Appel de la fonction de modification partielle d’une phrase
-            $matchingData=patchMedecin($linkpdo, $id , null, $data['nom'], null);
+            if(isset($data['civilite']) && isset($data['nom']) && isset($data['prenom'])) {
+                // Appel de la fonction de création d’un medecin
+                $matchingData = createMedecin($linkpdo, $data['civilite'], $data['nom'], $data['prenom']);
+                deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], null); // Les données de réponse sont stockées dans $matchingData, le troisième paramètre est null car il n'y a pas de données à renvoyer dans ce cas.
+            } else {
+                // Gestion de l'erreur si des données requises sont manquantes
+                deliver_response(400, "Des données requises sont manquantes", null);
+            }
+            
+        break;
 
-            deliver_response($matchingData["statusCode"], $matchingData["statusMessage"]);
-        }
+        case "PATCH" :
 
-    break;
+            if(isset($_GET['id']) == true) {
+                $id=htmlspecialchars($_GET['id']);
+                //Traitement des données
 
-    case "DELETE" :
+                //Récupération des données dans le corps
+                $postedData = file_get_contents('php://input');
+                $data = json_decode($postedData,true); //Reçoit du json et renvoi une adaptation exploitable en php. Le paramètre true impose un tableau en retour et non un objet.
+                //Traitement des données
+                
+                //Appel de la fonction de modification partielle d’une phrase
+                $matchingData=patchMedecin($linkpdo, $id , null, $data['nom'], null);
 
-        //Récupération des données dans l’URL si on veut avec l'id
-        if(isset($_GET['id']) == true) {
-            $id=htmlspecialchars($_GET['id']);
-            //Traitement des données
+                deliver_response($matchingData["statusCode"], $matchingData["statusMessage"]);
+            }
 
-            //Appel de la fonction de lecture des phrases
-            $matchingData=deleteMedecin($linkpdo, $id);
+        break;
 
-            deliver_response($matchingData["statusCode"], $matchingData["statusMessage"]);
-        }
-        
-    break;
+        case "DELETE" :
 
-    case "OPTIONS" :
+            //Récupération des données dans l’URL si on veut avec l'id
+            if(isset($_GET['id']) == true) {
+                $id=htmlspecialchars($_GET['id']);
+                //Traitement des données
 
-        // Ajoutez les en-têtes CORS pour indiquer les méthodes HTTP autorisées
-        header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
-        // Ajoutez les en-têtes CORS pour indiquer les en-têtes autorisés
-        header('Access-Control-Allow-Headers: Content-Type, Authorization');
+                //Appel de la fonction de lecture des phrases
+                $matchingData=deleteMedecin($linkpdo, $id);
 
-        deliver_response("204", "Autorisation de la méthode option et des requêtes CORS");
-        
-    break;
+                deliver_response($matchingData["statusCode"], $matchingData["statusMessage"]);
+            }
+            
+        break;
+
+        case "OPTIONS" :
+
+            // Ajoutez les en-têtes CORS pour indiquer les méthodes HTTP autorisées
+            header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
+            // Ajoutez les en-têtes CORS pour indiquer les en-têtes autorisés
+            header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
+            deliver_response("204", "Autorisation de la méthode option et des requêtes CORS");
+            
+        break;
+
+    }
 
 }
+
 ?>

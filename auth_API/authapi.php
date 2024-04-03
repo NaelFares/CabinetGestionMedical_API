@@ -27,5 +27,23 @@ switch ($http_method){
         }
     
     break;
+
+    //Validation
+    case "GET" :
+
+        $jeton = get_bearer_token();
+
+        if(!empty($jeton)) {
+            if(is_jwt_valid($jeton, "z4jtMwDqGPHHOvlItYanL0zSm")){
+                deliver_response("200", "jeton valide, authentification réussie");
+            } else {
+                deliver_response("401", "Echec d'authentification du jeton");
+            }
+        } else {
+            deliver_response("401", "Echec d'authentification, jeton inexistant");
+        }
+    
+    break;
 }
+
 ?>
