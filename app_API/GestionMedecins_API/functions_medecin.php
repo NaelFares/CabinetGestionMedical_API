@@ -337,7 +337,7 @@ function deleteMedecin($linkpdo, $id){
         
                                     $msgErreur = "Le medecin a été supprimé avec succès !";
                                     $response['statusCode'] = 200; // Status code
-                                    $response['statusMessage'] = "La requête a réussi, le médecin a été supprimé avec succès";
+                                    $response['statusMessage'] = "La requête a réussi, médecin supprimé avec succès";
                                     $response['data'] = null; // Stockage du message dans le tableau de réponse
                                 }
                         }
