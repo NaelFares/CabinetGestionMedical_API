@@ -95,9 +95,8 @@ function createPatient($linkpdo, $civilite, $nom, $prenom, $sexe,  $adresse, $vi
             // Vérification si le patient existe déjà
             if ($nbPatients > 0) {
                 $msgErreur = "Ce patient existe déjà dans la base de données";
-                $response['statusCode'] = 400;
-                $response['statusMessage'] = "Syntaxe de la requête non conforme";
-                $response['data'] = $msgErreur; // Stockage de la phrase dans le tableau de réponse
+                $response['statusCode'] = 409;
+                $response['statusMessage'] = "Erreur, ce patient existe déjà dans la base de données";
             } else {
                 // Préparation de la requête d'insertion
                 $req = $linkpdo->prepare('INSERT INTO patient(civilite, nom, prenom, sexe, adresse, ville, cp, date_naissance, lieu_naissance, num_secu_sociale, idM) VALUES(:civilite, :nom, :prenom, :sexe, :adresse, :ville, :cp, :date_naissance, :lieu_naissance, :num_secu_sociale, :idM)');
@@ -136,13 +135,13 @@ function createPatient($linkpdo, $civilite, $nom, $prenom, $sexe,  $adresse, $vi
                         $msgErreur = "Erreur d'exécution de la requête";
                         $response['statusCode'] = 400;
                         $response['statusMessage'] = "Syntaxe de la requête non conforme";
-                        $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+                        $response['data'] = null; // Stockage du message dans le tableau de réponse
 
                     } else {
                         $msgErreur = "Le patient a été ajouté avec succès !";
                         $response['statusCode'] = 201; // Status code
                         $response['statusMessage'] = "La requête a réussi et une nouvelle ressource a été créée";
-                        $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+                        $response['data'] = null; // Stockage du message dans le tableau de réponse
                     }
                 
                 }   
@@ -258,13 +257,13 @@ function patchPatient($linkpdo, $id, $civilite=null, $nom=null, $prenom=null, $s
             $msgErreur = "Erreur dans l'execution de la requête de modification d'un patient";
             $response['statusCode'] = 400;
             $response['statusMessage'] = "Syntaxe de la requête non conforme";
-            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+            $response['data'] = null; // Stockage du message dans le tableau de réponse
 
         } else {
             $msgErreur = "La requête a réussi, Le patient a été modifié avec succès !";
             $response['statusCode'] = 200; // Status code
             $response['statusMessage'] = "La requête a réussi, modification partielle effectuée";
-            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+            $response['data'] = null; // Stockage du message dans le tableau de réponse
         }
     }
 
@@ -328,7 +327,7 @@ function deletePatient($linkpdo, $id) {
                     $msgErreur = "Erreur dans l'exécution de la requête de suppression : ";
                     $response['statusCode'] = 400;
                     $response['statusMessage'] = "Syntaxe de la requête non conforme";
-                    $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+                    $response['data'] = null; // Stockage du message dans le tableau de réponse
 
                 } else {
                     // On récupère toutes les phrases
@@ -337,7 +336,7 @@ function deletePatient($linkpdo, $id) {
                     $msgErreur = "Le patient a été supprimé avec succès !";
                     $response['statusCode'] = 200; // Status code
                     $response['statusMessage'] = "La requête a réussi, suppression effectuée";
-                    $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+                    $response['data'] = null; // Stockage du message dans le tableau de réponse
 
                 }
             }

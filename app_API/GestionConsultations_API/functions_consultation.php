@@ -81,9 +81,8 @@
 
                 if ($nbConsultations > 0){
                     $msgErreur = "Cette consultation est déjà enregistrée.";
-                    $response['statusCode'] = 200;
-                    $response['statusMessage'] = "La requête a réussi";
-                    $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+                    $response['statusCode'] = 409;
+                    $response['statusMessage'] = "Erreur, la consultation est déjà enregistrée";
                 } else {
 
                      // Préparation de la requête de test de chevauchement de consultation pour un medecin
@@ -153,7 +152,9 @@
 
                                 // Vérification de chevauchement de la consultation
                                 if (($nbConsultationChevauchementMedecin > 0)  || ($nbConsultationChevauchementPatient > 0)) {
-                                    $msgErreur = "Créneau déjà réservé.";
+                                    $msgErreur = "Créneau déjà réservé";
+                                    $response['statusCode'] = 400;
+                                    $response['statusMessage'] = "Erreur, le créneau est déjà réservé";
                                 } else {
 
                                     $reqCreateConsultation = $linkpdo->prepare('INSERT INTO consulation (date_consultation, heure_debut, duree) VALUES (:date_consultation, :heure_debut, :duree');
@@ -173,12 +174,12 @@
                                             $msgErreur = "Erreur dans l'execution de la requête de création";
                                             $response['statusCode'] = 400;
                                             $response['statusMessage'] = "Syntaxe de la requête non conforme";
-                                            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+                                            $response['data'] = null; // Stockage du message dans le tableau de réponse
                                         } else {
                                             $msgErreur = "La consultation a été crée avec succès";
                                             $response['statusCode'] = 201; 
                                             $response['statusMessage'] = "La requête a réussi et une ressource a été crée";
-                                            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+                                            $response['data'] = null; // Stockage du message dans le tableau de réponse
                                         }
                                     }
                                 }
@@ -224,9 +225,8 @@
                         // Vérification si la consultation existe déjà
                         if ($nbConsultations > 0) {
                             $msgErreur = "Cette consultation est déjà enregistrée.";
-                            $response['statusCode'] = 200;
-                            $response['statusMessage'] = "La requête a réussi";
-                            $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+                            $response['statusCode'] = 409;
+                            $response['statusMessage'] = "Erreur, cette consultation est déjà enregistrée";
                         } else {
                                 $reqRecupConsultation = $linkpdo->prepare('SELECT * FROM consultation where idC = :idC');
 
@@ -290,9 +290,8 @@
                                     } else {
                                         $msgErreur = "La consultation a bien été modifiée"; // Stockage du message dans le tableau de réponse
                                         $response['statusCode'] = 200; // Status code
-                                        $response['statusMessage'] = "La requête a réussi";
-                                        $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
-
+                                        $response['statusMessage'] = "La requête a réussi, la consultation à bien été modifiée";
+                                        $response['data'] = null; // Stockage du message dans le tableau de réponse
                                     }
                             
                                 }
@@ -322,7 +321,7 @@
                 $msgErreur = "Erreur dans l'exécution de la requête de suppression : ";
                 $response['statusCode'] = 400;
                 $response['statusMessage'] = "Syntaxe de la requête non conforme";
-                $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+                $response['data'] = null; // Stockage du message dans le tableau de réponse
             } else {
                 
                 $data = $reqDeleteConsultation->fetchAll(PDO::FETCH_ASSOC);
@@ -330,7 +329,7 @@
                 $msgErreur = "La consultation a été supprimée avec succès !";
                 $response['statusCode'] = 200; 
                 $response['statusMessage'] = "La requête a réussi";
-                $response['data'] = $msgErreur; // Stockage du message dans le tableau de réponse
+                $response['data'] = null; // Stockage du message dans le tableau de réponse
 
             }
         }

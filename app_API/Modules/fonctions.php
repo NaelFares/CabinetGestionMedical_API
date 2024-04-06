@@ -7,6 +7,7 @@ function demande_validation() {
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+    //Ajout du token dans l'entête
     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
         'Authorization: Bearer ' . get_bearer_token()
     ));
@@ -22,7 +23,7 @@ function demande_validation() {
     } else {
         // Logique si la validation échoue
         $res = false;
-        //Renvoyer l'erreur générée dans la requête à l'URL
+        //Renvoyer l'erreur générée dans la requête à l'URL à partir du json reçu 
         deliver_response($json_output->status_code, $json_output->status_message);
     }
 
