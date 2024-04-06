@@ -32,30 +32,61 @@ function getMedecinById($linkpdo, $id) {
 
     $response = array(); // Initialisation du tableau de réponse
 
-    $reqMedecinParId = $linkpdo->prepare('SELECT idM, civilite, prenom, nom FROM medecin WHERE idM = :idM');
+    // Préparation de la requête de test de présence
+    $reqExiste = $linkpdo->prepare('SELECT COUNT(*) FROM medecin WHERE idM = :idM');
 
-    if ($reqMedecinParId == false) {
-        $response['statusCode'] = 400;
-        $response['statusMessage'] = "Syntaxe de la requête non conforme";
-    } else {
+     //Test de la requete de présence
+     if($reqExiste == false) {
+         die("Erreur de préparation de la requête de test de présence d'un médecin.");
+     } else {
 
-        $reqMedecinParId->bindParam(':idM', $id, PDO::PARAM_STR); 
+         $reqExiste->bindParam(":idM", $id, PDO::PARAM_STR);
+         // Exécution de la requête
+         $reqExiste->execute();
 
-        $reqMedecinParId->execute();
+         //Vérification de la bonne exécution de la requete
+         //Si oui on arrete et on affiche une erreur
+         //Si non on execute la requete
+         if($reqExiste == false) {
+             die("Erreur dans l'exécution de la requête de test de présence");
+         } else {
 
-        if ($reqMedecinParId == false) {
-            $response['statusCode'] = 400;
-            $response['statusMessage'] = "Syntaxe de la requête non conforme";
-        } else {
-            // On récupère tout les medecins
-            $data = $reqMedecinParId->fetchAll(PDO::FETCH_ASSOC);
+             // Récupération du résultat
+             $nbMedecinId = $reqExiste->fetchColumn();
 
-            $response['statusCode'] = 200; // Status code
-            $response['statusMessage'] = "La requête a réussi";
-            $response['data'] = $data; // Stockage des données dans le tableau de réponse
-        }
+             // Vérification de présence
+             if ($nbMedecinId == 0) {
+                 $response['statusCode'] = 404;
+                 $response['statusMessage'] = "Erreur, la ressource demandée n'existe pas";
+                 $response['data'] = null; 
+             } else {
+
+                $reqMedecinParId = $linkpdo->prepare('SELECT idM, civilite, prenom, nom FROM medecin WHERE idM = :idM');
+
+                if ($reqMedecinParId == false) {
+                    $response['statusCode'] = 400;
+                    $response['statusMessage'] = "Syntaxe de la requête non conforme";
+                } else {
+
+                    $reqMedecinParId->bindParam(':idM', $id, PDO::PARAM_STR); 
+
+                    $reqMedecinParId->execute();
+
+                    if ($reqMedecinParId == false) {
+                        $response['statusCode'] = 400;
+                        $response['statusMessage'] = "Syntaxe de la requête non conforme";
+                    } else {
+                        // On récupère tout les medecins
+                        $data = $reqMedecinParId->fetchAll(PDO::FETCH_ASSOC);
+
+                        $response['statusCode'] = 200; // Status code
+                        $response['statusMessage'] = "La requête a réussi";
+                        $response['data'] = $data; // Stockage des données dans le tableau de réponse
+                    }
+                }
+            }
+        } 
     }
-
     return $response; // Retour du tableau de réponse
 }
 
@@ -88,11 +119,11 @@ function createMedecin($linkpdo, $civilite, $nom, $prenom) {
                 // Récupération du résultat
                 $nbMedecins = $reqExisteDeja->fetchColumn();
 
-                // Vérification si le patient existe déjà
+                // Vérification si le medecin existe déjà
                 if ($nbMedecins > 0) {
                     $msgErreur = "Ce medecin est déjà enregistré.";
-                    $response['statusCode'] = 400;
-                    $response['statusMessage'] = "Ce medecin est déjà enregistré";
+                    $response['statusCode'] = 409;
+                    $response['statusMessage'] = "Erreur, Ce medecin est déjà enregistré";
                     $response['data'] = null; // Stockage du message dans le tableau de réponse
                 } else {
 

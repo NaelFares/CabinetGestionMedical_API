@@ -5,7 +5,7 @@
 
         $response = array(); // Initialisation du tableau de la réponse
 
-        $reqAllConsultations = $linkpdo->prepare('SELECT idC, date_consultation, heure_debut, duree, idM, idP FROM consultation ORDER BY date_consultation DESC');
+        $reqAllConsultations = $linkpdo->prepare('SELECT idC, date_consultation, heure_debut, duree, idM, idP FROM consultation ORDER BY date_consultation ASC');
 
         if($reqAllConsultations == false){
             $response['statusCode'] = 400;
@@ -17,8 +17,8 @@
                 $response['statusCode'] = 400;
                 $response['statusMessage'] = "Syntaxe de la requête non conforme";
             } else {
+                // On récupère toutes les consultations
                 $data = $reqAllConsultations->fetchAll(PDO::FETCH_ASSOC);
-
                 $response['statusCode'] = 200;
                 $response['statusMessage'] = "La requête à réussi";
                 $response['data'] = $data;
@@ -31,25 +31,56 @@
     function getConsultationById($linkpdo, $id) {
         $response = array(); // Initialisation du tableau de la réponse
 
-        $reqConsultationParId = $linkpdo->prepare('SELECT idM, date_consultation, heure_debut, duree, idP FROM consultation WHERE idC = :idC ORDER BY date_consultation DESC');
+        // Préparation de la requête de test de présence
+        $reqExiste = $linkpdo->prepare('SELECT COUNT(*) FROM consultation WHERE idC = :idC');
 
-        if($reqConsultationParId == false){
-            $response['statusCode'] = 400;
-            $response['statusMessage'] = "Syntaxe de la requête non conforme";
+        //Test de la requete de présence
+        if($reqExiste == false) {
+            die("Erreur de préparation de la requête de test de présence d'une consultation.");
         } else {
-            $reqConsultationParId->bindParam(":idC", $id, PDO::PARAM_STR);
 
-            $reqConsultationParId->execute();
+            $reqExiste->bindParam(":idC", $id, PDO::PARAM_STR);
+            // Exécution de la requête
+            $reqExiste->execute();
 
-            if($reqConsultationParId == false){
-                $response['statusCode'] = 400;
-                $response['statusMessage'] = "Syntaxe de la requête non conforme";
+            //Vérification de la bonne exécution de la requete
+            //Si oui on arrete et on affiche une erreur
+            //Si non on execute la requete
+            if($reqExiste == false) {
+                die("Erreur dans l'exécution de la requête de test de présence");
             } else {
-                // On récupère toutes les consultations
-                $data = $reqConsultationParId->fetchAll(PDO::FETCH_ASSOC);
-                $response['statusCode'] = 200;
-                $response['statusMessage'] = "La requête a réussi";
-                $response['data'] = $data;
+
+                // Récupération du résultat
+                $nbConsultationId = $reqExiste->fetchColumn();
+
+                // Vérification de présence
+                if ($nbConsultationId == 0) {
+                    $response['statusCode'] = 404;
+                    $response['statusMessage'] = "Erreur, la ressource demandée n'existe pas";
+                    $response['data'] = null; 
+                } else {
+
+                    $reqConsultationParId = $linkpdo->prepare('SELECT idC, idM, date_consultation, heure_debut, duree, idP FROM consultation WHERE idC = :idC');
+
+                    if($reqConsultationParId == false){
+                        $response['statusCode'] = 400;
+                        $response['statusMessage'] = "Syntaxe de la requête non conforme";
+                    } else {
+                        $reqConsultationParId->bindParam(":idC", $id, PDO::PARAM_STR);
+
+                        $reqConsultationParId->execute();
+
+                        if($reqConsultationParId == false){
+                            $response['statusCode'] = 400;
+                            $response['statusMessage'] = "Syntaxe de la requête non conforme";
+                        } else { 
+                            $data = $reqConsultationParId->fetchAll(PDO::FETCH_ASSOC);
+                            $response['statusCode'] = 200;
+                            $response['statusMessage'] = "La requête a réussi";
+                            $response['data'] = $data;
+                        }
+                    }
+                }
             }
         }
         return $response;
@@ -83,6 +114,7 @@
                     $msgErreur = "Cette consultation est déjà enregistrée.";
                     $response['statusCode'] = 409;
                     $response['statusMessage'] = "Erreur, la consultation est déjà enregistrée";
+                    $response['data'] = null; 
                 } else {
 
                      // Préparation de la requête de test de chevauchement de consultation pour un medecin
@@ -227,6 +259,7 @@
                             $msgErreur = "Cette consultation est déjà enregistrée.";
                             $response['statusCode'] = 409;
                             $response['statusMessage'] = "Erreur, cette consultation est déjà enregistrée";
+                            $response['data'] = null; 
                         } else {
                                 $reqRecupConsultation = $linkpdo->prepare('SELECT * FROM consultation where idC = :idC');
 

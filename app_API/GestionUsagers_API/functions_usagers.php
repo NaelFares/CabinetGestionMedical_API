@@ -27,33 +27,64 @@ function getAllPatients($linkpdo) {
     return $response; // Retour du tableau de réponse
 }
 
-function getPatientsById($linkpdo, $idP) {
+function getPatientsById($linkpdo, $id) {
 
     $response = array(); // Initialisation du tableau de réponse
 
-    $reqgetPatientsById = $linkpdo->prepare('SELECT idP, civilite, nom, prenom, adresse, ville, cp, date_naissance, lieu_naissance, num_secu_sociale, idM FROM patient WHERE idP = :idP');
+    // Préparation de la requête de test de présence
+    $reqExiste = $linkpdo->prepare('SELECT COUNT(*) FROM patient WHERE idP = :idP');
 
-    if ($reqgetPatientsById == false) {
-        echo "Erreur dans la préparation de la requête d'affichage d'une seule phrase.";
-    } else {
+     //Test de la requete de présence
+     if($reqExiste == false) {
+         die("Erreur de préparation de la requête de test de présence d'un patient.");
+     } else {
 
-        $reqgetPatientsById->bindParam(':idP', $idP, PDO::PARAM_STR); 
+         $reqExiste->bindParam(":idP", $id, PDO::PARAM_STR);
+         // Exécution de la requête
+         $reqExiste->execute();
 
-        $reqgetPatientsById->execute();
+         //Vérification de la bonne exécution de la requete
+         //Si oui on arrete et on affiche une erreur
+         //Si non on execute la requete
+         if($reqExiste == false) {
+             die("Erreur dans l'exécution de la requête de test de présence");
+         } else {
 
-        if ($reqgetPatientsById == false) {
-            $response['statusCode'] = 400;
-            $response['statusMessage'] = "Syntaxe de la requête non conforme";
-        } else {
-            // On récupère toutes les phrases
-            $data = $reqgetPatientsById->fetchAll(PDO::FETCH_ASSOC);
+             // Récupération du résultat
+             $nbPatientId = $reqExiste->fetchColumn();
 
-            $response['statusCode'] = 200; // Status code
-            $response['statusMessage'] = "La requête a réussi";
-            $response['data'] = $data; // Stockage des données dans le tableau de réponse
+             // Vérification de présence
+             if ($nbPatientId == 0) {
+                 $response['statusCode'] = 404;
+                 $response['statusMessage'] = "Erreur, la ressource demandée n'existe pas";
+                 $response['data'] = null; 
+             } else {
+
+                $reqgetPatientsById = $linkpdo->prepare('SELECT idP, civilite, nom, prenom, adresse, ville, cp, date_naissance, lieu_naissance, num_secu_sociale, idM FROM patient WHERE idP = :idP');
+
+                if ($reqgetPatientsById == false) {
+                    echo "Erreur dans la préparation de la requête d'affichage d'une seule phrase.";
+                } else {
+
+                    $reqgetPatientsById->bindParam(':idP', $id, PDO::PARAM_STR); 
+
+                    $reqgetPatientsById->execute();
+
+                    if ($reqgetPatientsById == false) {
+                        $response['statusCode'] = 400;
+                        $response['statusMessage'] = "Syntaxe de la requête non conforme";
+                    } else {
+                        // On récupère toutes les phrases
+                        $data = $reqgetPatientsById->fetchAll(PDO::FETCH_ASSOC);
+
+                        $response['statusCode'] = 200; // Status code
+                        $response['statusMessage'] = "La requête a réussi";
+                        $response['data'] = $data; // Stockage des données dans le tableau de réponse
+                    }
+                }
+            }
         }
     }
-
     return $response; // Retour du tableau de réponse
 }
 
@@ -97,6 +128,7 @@ function createPatient($linkpdo, $civilite, $nom, $prenom, $sexe,  $adresse, $vi
                 $msgErreur = "Ce patient existe déjà dans la base de données";
                 $response['statusCode'] = 409;
                 $response['statusMessage'] = "Erreur, ce patient existe déjà dans la base de données";
+                $response['data'] = null; 
             } else {
                 // Préparation de la requête d'insertion
                 $req = $linkpdo->prepare('INSERT INTO patient(civilite, nom, prenom, sexe, adresse, ville, cp, date_naissance, lieu_naissance, num_secu_sociale, idM) VALUES(:civilite, :nom, :prenom, :sexe, :adresse, :ville, :cp, :date_naissance, :lieu_naissance, :num_secu_sociale, :idM)');
