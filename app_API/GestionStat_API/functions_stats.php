@@ -103,12 +103,18 @@
 
 ////// Durée totale des consultations effectuées par chaque médecin (nbHeures)
     function getStatisticsNbHeuresConsultParMedecin($linkpdo){
-        $reqNbHeuresConsultParMedecin = $linkpdo->prepare("
-            SELECT c.idM, m.nom, m.prenom, SUM(HOUR(c.duree)) AS total_heures 
-            FROM consultation c 
-            JOIN medecin m ON c.idM = m.idM 
-            GROUP BY c.idM
-        ");
+        $reqNbHeuresConsultParMedecin = $linkpdo->prepare('
+                        SELECT
+                            m.civilite,
+                            m.nom,
+                            m.prenom,
+                            SEC_TO_TIME(SUM(TIME_TO_SEC(c.duree))) AS total_heures
+                        FROM
+                            medecin m
+                            LEFT JOIN consultation c ON m.idM = c.idM
+                        GROUP BY
+                            m.idM
+                    ');
 
         if($reqNbHeuresConsultParMedecin == false){
             die ("Erreur dans la préparation des requêtes.");
