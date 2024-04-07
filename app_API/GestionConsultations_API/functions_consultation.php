@@ -222,7 +222,7 @@
                                         } else {
                                             $msgErreur = "La consultation a été crée avec succès";
                                             $response['statusCode'] = 201; 
-                                            $response['statusMessage'] = "La requête a réussi et une ressource a été crée";
+                                            $response['statusMessage'] = "La requête a réussi et une ressource a été créée";
                                             $response['data'] = null; // Stockage du message dans le tableau de réponse
                                         }
                                     }
