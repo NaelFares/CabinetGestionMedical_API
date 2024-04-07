@@ -135,7 +135,14 @@
             $nomMedecin = $row['nom'];
             $prenomMedecin = $row ['prenom'];
             $heure = $row['total_heures'];
-            $heureFormatee = DateTime::createFromFormat('H:i:s', $heure)->format('H\hi');
+
+            // Vérifier si la valeur de la durée est NULL
+            if ($heure !== null) {
+                $heureFormatee = DateTime::createFromFormat('H:i:s', $heure)->format('H\hi');
+            } else {
+                $heureFormatee = 'N/A'; // Ou toute autre valeur par défaut que vous souhaitez
+            }
+            //$heureFormatee = DateTime::createFromFormat('H:i:s', $heure)->format('H\hi');
             $stats_NbHeuresConsultParMedecin[$idMedecin] = array(
                 'nom' => $nomMedecin,
                 'prenom' => $prenomMedecin,
