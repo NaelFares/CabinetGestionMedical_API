@@ -105,10 +105,11 @@
     function getStatisticsNbHeuresConsultParMedecin($linkpdo){
         $reqNbHeuresConsultParMedecin = $linkpdo->prepare('
                         SELECT
+                            c.idM,
                             m.civilite,
                             m.nom,
                             m.prenom,
-                            SEC_TO_TIME(SUM(TIME_TO_SEC(c.duree))) AS total_heures
+                            SEC_TO_TIME(SUM(TIME_TO_SEC(c.duree))) AS duree_totale
                         FROM
                             medecin m
                             LEFT JOIN consultation c ON m.idM = c.idM
