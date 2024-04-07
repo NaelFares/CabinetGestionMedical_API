@@ -109,7 +109,7 @@
                             m.civilite,
                             m.nom,
                             m.prenom,
-                            SEC_TO_TIME(SUM(TIME_TO_SEC(c.duree))) AS duree_totale
+                            SEC_TO_TIME(SUM(TIME_TO_SEC(c.duree))) AS total_heures
                         FROM
                             medecin m
                             LEFT JOIN consultation c ON m.idM = c.idM
@@ -134,12 +134,12 @@
             $idMedecin = $row['idM'];
             $nomMedecin = $row['nom'];
             $prenomMedecin = $row ['prenom'];
-            $totalSec = $row['total_heures'];
-            $totalHeures = floor($totalSec / 3600); //Conversion des sec en heures
+            $heure = $row['total_heures'];
+            $heureFormatee = DateTime::createFromFormat('H:i:s', $heure)->format('H\hi');
             $stats_NbHeuresConsultParMedecin[$idMedecin] = array(
                 'nom' => $nomMedecin,
                 'prenom' => $prenomMedecin,
-                'total_heures' => $totalHeures
+                'total_heures' => $heureFormatee
             );
         }
 
