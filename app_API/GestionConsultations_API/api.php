@@ -39,9 +39,9 @@ if(demande_validation()) {
             $data = json_decode($postedData,true); //Reçoit du json et renvoi une adaptation exploitable en php. Le paramètre true impose un tableau en retour et non un objet.
             //Traitement des données
             
-            if(isset($data['date_consultation']) && isset($data['heure_debut']) && isset($data['duree'])) {
+            if(isset($data['date_consult']) && isset($data['heure_consult']) && isset($data['duree_consult'])) {
                 // Appel de la fonction de création d’une consultation
-                $matchingData = createConsultation($linkpdo, $data['date_consultation'], $data['heure_debut'], $data['duree']);
+                $matchingData = createConsultation($linkpdo, $data['id_medecin'], $data['id_usager'], $data['date_consult'], $data['heure_consult'], $data['duree_consult']);
                 deliver_response($matchingData["statusCode"], $matchingData["statusMessage"], null); // Les données de réponse sont stockées dans $matchingData, le troisième paramètre est null car il n'y a pas de données à renvoyer dans ce cas.
             } else {
                 // Gestion de l'erreur si des données requises sont manquantes

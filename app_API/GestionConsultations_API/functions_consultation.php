@@ -86,7 +86,17 @@
         return $response;
     }
 
-    function createConsultation($linkpdo, $date_consultation, $heure_debut, $duree){
+    function createConsultation($linkpdo, $idM, $idP, $date_consultation_param, $heure_debut_param, $duree_param){
+
+        // Convertir la date reçue dans le format de la base de données
+        $date_consultation = DateTime::createFromFormat('d/m/y', $date_consultation_param)->format('Y-m-d');
+            
+        // Convertir l'heure reçue dans le format de la base de données
+        $heure_debut = DateTime::createFromFormat('H:i', $heure_debut_param)->format('H:i:s');
+        
+        // Convertir la durée reçue dans le format de la base de données
+        $duree = DateTime::createFromFormat('i', $duree_param)->format('H:i:s');
+
         $response = array(); // Initialisation du tableau de la réponse
 
         //Vérifier si la consultation n'existe pas déja
@@ -98,7 +108,7 @@
         } else {
 
             $reqExisteDeja->bindParam(':date_consultation',$date_consultation, PDO::PARAM_STR);
-            $reqExisteDeja->bindParam(':heure_debut',$heure_debut, PDO::PARAM8STR);
+            $reqExisteDeja->bindParam(':heure_debut',$heure_debut, PDO::PARAM_STR);
             $reqExisteDeja->bindParam(':duree',$duree, PDO::PARAM_STR);
 
             $reqExisteDeja->execute();
@@ -108,7 +118,7 @@
                 $response['statusMessage'] = "Syntaxe de la requête non conforme";
             } else {
 
-                $nbConsultations = $reqConsultExistDeja->fetchColumn();
+                $nbConsultations = $reqExisteDeja->fetchColumn();
 
                 if ($nbConsultations > 0){
                     $msgErreur = "Cette consultation est déjà enregistrée.";
@@ -151,16 +161,16 @@
                             //PDO::PARAM_STR : C'est le type de données que vous spécifiez pour le paramètre. 
                             //Ici, on indique que :nom doit être traité comme une chaîne de caractères (string). 
                             //Cela permet à PDO de s'assurer que la valeur est correctement échappée et protégée contre les injections SQL
-                            $reqChevauchementMedecin->bindParam(':date_consultation', $_POST['date_consultation'], PDO::PARAM_STR);
-                            $reqChevauchementMedecin->bindParam(':heure_debut', $_POST['heure_debut'], PDO::PARAM_STR);
-                            $reqChevauchementMedecin->bindParam(':duree', $_POST['duree'], PDO::PARAM_STR);
-                            $reqChevauchementMedecin->bindParam(':idM', $_POST['idM'], PDO::PARAM_STR);
+                            $reqChevauchementMedecin->bindParam(':date_consultation', $date_consultation, PDO::PARAM_STR);
+                            $reqChevauchementMedecin->bindParam(':heure_debut', $heure_debut, PDO::PARAM_STR);
+                            $reqChevauchementMedecin->bindParam(':duree', $duree, PDO::PARAM_STR);
+                            $reqChevauchementMedecin->bindParam(':idM', $idM, PDO::PARAM_STR);
 
                             // Liaison des paramètres pour la requête chevauchement patient
-                            $reqChevauchementPatient->bindParam(':date_consultation', $_POST['date_consultation'], PDO::PARAM_STR);
-                            $reqChevauchementPatient->bindParam(':heure_debut', $_POST['heure_debut'], PDO::PARAM_STR);
-                            $reqChevauchementPatient->bindParam(':duree', $_POST['duree'], PDO::PARAM_STR);
-                            $reqChevauchementPatient->bindParam(':idP', $_POST['idP'], PDO::PARAM_STR);
+                            $reqChevauchementPatient->bindParam(':date_consultation', $date_consultation, PDO::PARAM_STR);
+                            $reqChevauchementPatient->bindParam(':heure_debut', $heure_debut, PDO::PARAM_STR);
+                            $reqChevauchementPatient->bindParam(':duree', $duree, PDO::PARAM_STR);
+                            $reqChevauchementPatient->bindParam(':idP', $idP, PDO::PARAM_STR);
 
                             // Exécution de la requête
                             $reqChevauchementMedecin->execute();
@@ -189,7 +199,7 @@
                                     $response['statusMessage'] = "Erreur, le créneau est déjà réservé";
                                 } else {
 
-                                    $reqCreateConsultation = $linkpdo->prepare('INSERT INTO consulation (date_consultation, heure_debut, duree) VALUES (:date_consultation, :heure_debut, :duree');
+                                    $reqCreateConsultation = $linkpdo->prepare('INSERT INTO consultation(date_consultation, heure_debut, duree, idP, idM) VALUES(:date_consultation, :heure_debut, :duree, :idP, :idM)');
 
                                     if($reqCreateConsultation == false){
                                         $response['statusCode'] = 400;
@@ -199,6 +209,8 @@
                                         $reqCreateConsultation->bindParam(':date_consultation', $date_consultation, PDO::PARAM_STR);
                                         $reqCreateConsultation->bindParam(':heure_debut', $heure_debut, PDO::PARAM_STR);
                                         $reqCreateConsultation->bindParam(':duree', $duree, PDO::PARAM_STR);
+                                        $reqCreateConsultation->bindParam(':idP', $idP, PDO::PARAM_STR);
+                                        $reqCreateConsultation->bindParam(':idM', $idM, PDO::PARAM_STR);
 
                                         $reqCreateConsultation->execute();
 
@@ -361,7 +373,7 @@
 
                 $msgErreur = "La consultation a été supprimée avec succès !";
                 $response['statusCode'] = 200; 
-                $response['statusMessage'] = "La requête a réussi";
+                $response['statusMessage'] = "La requête a réussi, consultation supprimée avec succès ";
                 $response['data'] = null; // Stockage du message dans le tableau de réponse
 
             }
