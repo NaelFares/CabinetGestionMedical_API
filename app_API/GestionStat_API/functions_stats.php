@@ -127,31 +127,30 @@
             $response['statusMessage'] = "Syntaxe de la requête (stat nbHeures/medecin) non conforme";
         } else {
             $resultArray = $reqNbHeuresConsultParMedecin->fetchAll(PDO::FETCH_ASSOC);
-        }
+        
+            $stats_NbHeuresConsultParMedecin = array();
+            foreach ($resultArray as $row){
+                $idMedecin = $row['idM'];
+                $nomMedecin = $row['nom'];
+                $prenomMedecin = $row ['prenom'];
+                $heure = $row['total_heures'];
 
-        $stats_NbHeuresConsultParMedecin = array();
-        foreach ($resultArray as $row){
-            $idMedecin = $row['idM'];
-            $nomMedecin = $row['nom'];
-            $prenomMedecin = $row ['prenom'];
-            $heure = $row['total_heures'];
-
-            // Vérifier si la valeur de la durée est NULL
-            if ($heure !== null) {
-                $heureFormatee = DateTime::createFromFormat('H:i:s', $heure)->format('H\hi');
-            } else {
-                $heureFormatee = 'N/A'; // Ou toute autre valeur par défaut que vous souhaitez
+                // Vérifier si la valeur de la durée est NULL
+                if ($heure !== null) {
+                    $heureFormatee = DateTime::createFromFormat('H:i:s', $heure)->format('H\hi');
+                } else {
+                    $heureFormatee = 'N/A'; // Ou toute autre valeur par défaut que vous souhaitez
+                }
+                //$heureFormatee = DateTime::createFromFormat('H:i:s', $heure)->format('H\hi');
+                $stats_NbHeuresConsultParMedecin[$idMedecin] = array(
+                    'nom' => $nomMedecin,
+                    'prenom' => $prenomMedecin,
+                    'total_heures' => $heureFormatee
+                );
             }
-            //$heureFormatee = DateTime::createFromFormat('H:i:s', $heure)->format('H\hi');
-            $stats_NbHeuresConsultParMedecin[$idMedecin] = array(
-                'nom' => $nomMedecin,
-                'prenom' => $prenomMedecin,
-                'total_heures' => $heureFormatee
-            );
         }
-
-        return $stats_NbHeuresConsultParMedecin;
-    }
+    return $stats_NbHeuresConsultParMedecin;
+}
 
 
     function deliver_response($status_code, $status_message, $data=null) {
