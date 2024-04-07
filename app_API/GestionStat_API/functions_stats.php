@@ -112,7 +112,7 @@
                             SEC_TO_TIME(SUM(TIME_TO_SEC(c.duree))) AS total_heures
                         FROM
                             medecin m
-                            LEFT JOIN consultation c ON m.idM = c.idM
+                            INNER JOIN consultation c ON m.idM = c.idM
                         GROUP BY
                             m.idM
                     ');
