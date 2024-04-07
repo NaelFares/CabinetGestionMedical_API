@@ -3,7 +3,7 @@
 // Fonction pour effectuer une demande de validation à l'API d'authentification
 function demande_validation() {
     $res = false;
-    $url = 'http://localhost/CabinetGestionMedical_API/auth'; // URL de l'endpoint de validation
+    $url = 'https://authentificationapi.alwaysdata.net/auth'; // URL de l'endpoint de validation
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');

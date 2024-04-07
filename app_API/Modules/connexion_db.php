@@ -1,5 +1,6 @@
 <?php
 
+/*
 $server = "localhost";
 $db = "cabinetmedicalapi_bd_app";
 $login = "root";
@@ -11,11 +12,10 @@ try {
 } catch (Exception $e) {
     die('Erreur : ' . $e->getMessage());
 }
-
+*/
 
 //Pour la version en ligne sur alwaysdata
 
-/*
    $server = "mysql-cabinetmedicalapi.alwaysdata.net";
    $db = "cabinetmedicalapi_bd_app";
    $login = "350794";
@@ -27,5 +27,5 @@ try {
    } catch (Exception $e) {
        die('Erreur : ' . $e->getMessage());
    }
-   */
+
 ?>
